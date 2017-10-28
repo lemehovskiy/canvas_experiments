@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Paricles</title>
+
+</head>
+<body style="margin: 0;">
+
+
+
+<canvas id="canvas" width="1080" height="606"></canvas>
+
+<script src="src/js/vendor/lodash.min.js"></script>
+
+
+<script>
+
+
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var img = new Image();
+    img.src = 'environmental-stewardship-article.jpg';
+    img.onload = function() {
+        var pattern = ctx.createPattern(img, 'repeat');
+
+        var width = img.naturalWidth; // this will be 300
+        var height = img.naturalHeight; // this will be 400
+
+        console.log(width);
+        console.log(height);
+
+        var particleWidth = 200;
+        var particleHeight = 200;
+
+        var offset_x = 500;
+
+        var moveX = 500;
+
+        ctx.fillStyle = pattern;
+
+
+        ctx.save();
+        ctx.translate(-offset_x + moveX, 0);
+        ctx.fillRect(offset_x, 0, particleWidth, particleHeight);
+        ctx.restore();
+
+    };
+
+</script>
+
+</body>
+
+
+</html>

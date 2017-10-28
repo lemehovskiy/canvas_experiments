@@ -1,0 +1,126 @@
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+* {
+  box-sizing: border-box; }
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after {
+  content: '';
+  content: none; }
+
+q:before, q:after {
+  content: '';
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+input, button {
+  padding: 0;
+  margin: 0;
+  border: none; }
+  input:focus, button:focus {
+    outline: none; }
+
+.top-section {
+  font-family: 'Oswald', sans-serif; }
+  .top-section .rect-outer {
+    padding: 50% 0 0; }
+  .top-section .landing-side {
+    height: 100%;
+    position: absolute; }
+  .top-section .intro-slide {
+    z-index: 2; }
+    .top-section .intro-slide .title {
+      text-transform: uppercase;
+      font-size: 100px;
+      color: white;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2; }
+    .top-section .intro-slide:before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 1; }
+    .top-section .intro-slide canvas {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 3; }
+  .top-section .landing-slide {
+    z-index: 1; }
+    .top-section .landing-slide .overlay {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 1; }
+    .top-section .landing-slide .title {
+      text-transform: uppercase;
+      font-size: 50px;
+      color: white;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translate(0, -50%);
+      z-index: 2;
+      text-align: center;
+      width: 100%; }
+      .top-section .landing-slide .title .line-2 {
+        font-size: 100px; }
+      .top-section .landing-slide .title ul {
+        position: relative;
+        display: inline-block;
+        color: orange; }
+        .top-section .landing-slide .title ul li + li {
+          position: absolute;
+          right: 0;
+          top: 0;
+          opacity: 0; }
+
+.back-img {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center; }
+
+.rect-outer {
+  position: relative; }
+
+.rect-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0; }
+
+/*# sourceMappingURL=style.css.map */

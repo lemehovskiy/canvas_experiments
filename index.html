@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+</head>
+<body style="margin: 0;">
+
+
+
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.min.js"></script>-->
+<script src="src/js/vendor/pixi.js"></script>
+<script>
+
+    let stage = new PIXI.Container();
+    let renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+    renderer.backgroundColor = 0x000000;
+
+    document.body.appendChild(renderer.view);
+
+    /*////////////////////////////////////////*/
+
+    let container = new PIXI.Container();
+    container.position.x = (renderer.width / 2);
+    container.position.y = renderer.height / 2;
+    stage.addChild(container);
+
+
+    /*////////////////////////////////////////*/
+
+    let originalVertices = [],
+        mesh;
+
+    let texture = new PIXI.Texture.fromImage('imgs/pexels-photo.jpg');
+
+
+    texture.on('update', function () {
+
+        mesh = new PIXI.mesh.Plane(this, 20, 20);
+        mesh.width = this.width; //renderer.width * 0.35;
+        mesh.height = this.height;//renderer.width * 0.5;
+        container.addChild(mesh);//, 0);
+        mesh.pivot.x = mesh.width * 0.4;
+        mesh.pivot.y = mesh.height * 0.3;
+
+        originalVertices = mesh.vertices.slice(0);
+
+
+        mesh.interactive = true;
+
+        // console.log(originalVertices);
+
+
+        // for (let i = 0; i < mesh.vertices.length / 3; i++) {
+        //
+        //     console.log(mesh.vertices[i]);
+        // }
+
+
+        animate();
+    });
+
+    /*////////////////////////////////////////*/
+
+    let count = 0;
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+
+        count += 0.05;
+
+        if (mesh && mesh.vertices) {
+
+            for (let i = 0; i < mesh.vertices.length; i++) {
+
+                mesh.vertices[i] = originalVertices[i] + (4 * Math.sin(count + i * 0.15));
+
+
+
+            }
+        }
+
+        renderer.render(stage);
+    }
+</script>
+
+</body>
+
+
+</html>

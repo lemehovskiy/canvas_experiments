@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Paricles</title>
+
+</head>
+<body style="margin: 0;">
+
+
+<script src="src/js/vendor/lodash.min.js"></script>
+<script>
+
+
+    let canvas = document.createElement("canvas"),
+            c = canvas.getContext("2d");
+
+
+    canvas.width = 800;
+    canvas.height = 800;
+
+    document.body.appendChild(canvas);
+
+    c.fillStyle = "black";
+    c.fillRect(0, 0, canvas.width, canvas.height);
+
+    let ctx = canvas.getContext("2d");
+
+    let particlesNum = 100;
+
+
+    class Particle {
+
+        constructor() {
+
+            this.rectSize = Math.random() * 5;
+
+            this.posX = canvas.width / 2;
+            this.posY = canvas.height;
+
+            this.vx = Math.random() * 3;
+            this.vy = Math.random() * 3;
+
+            this.vxMax = _.random(3, true);
+            this.vyMax = _.random(3, true);
+
+            this.color = '#' + Math.random().toString(16).slice(2, 8).toUpperCase();
+
+            this.launched = false;
+
+            this.launchSpeed = _.random(1, 10, true);
+            this.launchAngle = _.random(-0.5, 0.5, true);
+
+            this.directionY = 0;
+            this.directionX = Math.random() < 0.5 ? -1 : 1;
+
+            this.counter = 0;
+
+            this.life = 160;
+        }
+
+    }
+
+
+    let particles = [];
+
+
+    function addParticle() {
+
+        let particleCounter = 0;
+
+
+        setInterval(function () {
+
+            let particle = new Particle();
+
+            particles.push(particle);
+            particleCounter++;
+
+//            if (particleCounter < particlesNum) {
+//                let particle = new Particle();
+//
+//                particles.push(particle);
+//                particleCounter++;
+//
+//
+//            }
+//
+//            else {
+//                return;
+//            }
+
+        }, 0.01)
+
+    }
+
+
+
+    var mousePos = {};
+
+
+    function getMousePos(canvas, event) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+        }
+    }
+
+    canvas.addEventListener('mousemove', function (event) {
+        mousePos = getMousePos(canvas, event);
+    });
+
+
+    addParticle();
+
+
+    function draw() {
+
+
+        c.fillStyle = "rgba(0,0,0,0.5)";
+        c.fillRect(0, 0, canvas.width, canvas.height);
+
+
+        requestAnimationFrame(draw);
+
+
+        particles.forEach(function (item, i, arr) {
+
+
+
+            if (item.launched) {
+
+                if (item.vx > item.vxMax) {
+                    item.vx -= 0.05;
+                }
+
+                else {
+                    item.vx = item.vxMax;
+                }
+
+                if (item.vy > item.vyMax) {
+                    item.vy -= 0.05;
+                }
+
+                else {
+                    item.vy = item.vyMax;
+                }
+            }
+
+            else {
+                item.vy = item.launchSpeed;
+                item.vx = item.launchAngle;
+
+
+                item.launched = true;
+
+            }
+
+
+            updateLife();
+            moveParticle();
+            checkDirection();
+            drawParticle();
+
+
+            function updateLife () {
+                item.life -= 1;
+
+
+                if (item.life < 0) {
+                    arr.splice(i, 1);
+                }
+
+            }
+
+
+            function drawParticle() {
+                ctx.beginPath();
+
+                ctx.fillStyle = item.color;
+
+                ctx.arc(item.posX, item.posY, item.rectSize / 2, Math.PI * 2, false);
+                ctx.fill();
+            }
+
+
+
+            function moveParticle() {
+
+                var increase = 2 / 180 / Math.PI / 2;
+
+
+                var y = Math.abs(Math.cos(item.counter) * item.vy);
+
+                var x = Math.abs(Math.cos(item.counter) * item.vx);
+
+
+                if (item.directionX == 1) {
+                    item.posX += x;
+
+                }
+
+                else {
+                    item.posX -= x;
+                }
+
+
+                if (item.directionY == 1) {
+                    item.posY += item.vy;
+                }
+
+                else {
+                    item.posY -= item.vy;
+                }
+
+                item.counter += increase;
+            }
+
+
+            function checkDirection() {
+
+                if (item.posX >= canvas.width - item.rectSize) {
+                    item.directionX = -1;
+                }
+
+                if (item.posX <= 0) {
+                    item.directionX = 1;
+                }
+
+                if (item.posY >= canvas.height - item.rectSize) {
+                    item.directionY = -1;
+                }
+
+                if (item.posY <= 0) {
+                    item.directionY = 1;
+                }
+            }
+
+
+        })
+
+    }
+
+
+    draw();
+
+</script>
+
+</body>
+
+
+</html>
