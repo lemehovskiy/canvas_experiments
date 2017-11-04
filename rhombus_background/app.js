@@ -11,74 +11,123 @@ ctx.fillStyle = "black";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
+class Rhombus_Grid {
 
-class Rhombus_Grid{
-
-    constructor(){
+    constructor() {
         let self = this;
 
         self.grid_size = 20;
         self.rhombus_arr = [];
-        self.rhombus_width = 100;
-        self.rhombus_height = 50;
+        self.rhombus_width = 600;
+        self.rhombus_height = 300;
+
+        self.container_width = 400;
+
+        self.container_offset_left = (canvas.width - self.container_width) / 2;
+        self.container_offset_right = (canvas.width - self.container_width) / 2 + self.container_width;
+
+        self.container_padding = 50;
+
+        // self.init_rhombus_position_x_points = 0;
+        // self.init_rhombus_position_y_points = 0;
+
+        self.init_rhombus_position_x = self.container_offset_left + self.container_padding;
+        self.init_rhombus_position_y = self.rhombus_height / 2;
+
 
         self.draw_grid();
 
     }
 
-    draw_grid(){
+    create_rhombus(options){
+
+        console.log(options);
 
         let self = this;
 
-        let offset_x = 0;
-        let offset_y = -self.rhombus_height / 2;
+        let rhombus = new Rhombus({
+            x: options.x,
+            y: options.y,
+            width: self.rhombus_width,
+            height: self.rhombus_height,
+            color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+        });
 
-        let grid_x = 0;
-        let grid_y = -1;
+        self.rhombus_arr.push({
+            rhombus: rhombus,
+        });
+    }
 
-        let row = 0;
-        //switch between rows
-        while (row < self.grid_size) {
+    draw_grid() {
 
-            //draw row
-            for (let i = 0; i < self.grid_size; i++) {
-                let rhombus = new Rhombus({
-                    x: offset_x,
-                    y: offset_y,
-                    width: self.rhombus_width,
-                    height: self.rhombus_height,
-                    color: '#'+Math.floor(Math.random()*16777215).toString(16)
+        let self = this;
+
+        //draw_init_rhombus
+        self.create_rhombus({
+            x: self.init_rhombus_position_x,
+            y: self.init_rhombus_position_y
+        });
+
+        self.draw_rows();
+
+
+    }
+
+    draw_rows(draw_direction){
+
+        let self = this;
+
+        let y = self.init_rhombus_position_y;
+
+        let row = 1;
+
+        let draw_to_left_x = self.init_rhombus_position_x - self.rhombus_width;
+        let draw_to_right_x = self.init_rhombus_position_x + self.rhombus_width;
+
+
+        //draw row
+        while (y < canvas.height) {
+
+            //draw row to left
+            while (draw_to_left_x + self.rhombus_width > 0) {
+
+                self.create_rhombus({
+                    x: draw_to_left_x,
+                    y: y
                 });
 
-                offset_x += self.rhombus_width;
-                // y += self.rhombus_height;
+                draw_to_left_x -= self.rhombus_width;
+            }
 
-                self.rhombus_arr.push({
-                    rhombus: rhombus,
-                    grid_x: grid_x,
-                    grid_y: grid_y
+            //draw row to right
+            while (draw_to_right_x < canvas.width) {
+
+                self.create_rhombus({
+                    x: draw_to_right_x,
+                    y: y
                 });
 
-                grid_x += 2;
+                draw_to_right_x += self.rhombus_width;
             }
 
 
-            //check for x shift
+
+            y += self.rhombus_height / 2;
+
+            row ++;
+
+            //reset draw position
+
             if (row % 2 == 0) {
-                offset_x =  -self.rhombus_width / 2;
-                grid_x = -1;
+                draw_to_left_x = self.init_rhombus_position_x - self.rhombus_width / 2;
+                draw_to_right_x = self.init_rhombus_position_x + self.rhombus_width / 2;
             }
+
             else {
-                offset_x = 0;
-                grid_x = 0;
+                draw_to_left_x = self.init_rhombus_position_x - self.rhombus_width;
+                draw_to_right_x = self.init_rhombus_position_x;
             }
 
-            //shift by y
-            offset_y += self.rhombus_height / 2;
-
-            grid_y++;
-
-            row++
         }
 
         console.log(self.rhombus_arr);
@@ -87,7 +136,7 @@ class Rhombus_Grid{
 }
 
 class Rhombus {
-    constructor(options){
+    constructor(options) {
         let self = this;
 
         self.x = options.x;
@@ -100,7 +149,7 @@ class Rhombus {
         self.draw_rhombus();
     }
 
-    draw_rhombus(){
+    draw_rhombus() {
 
         let self = this;
 
