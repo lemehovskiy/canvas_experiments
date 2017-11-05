@@ -256,3 +256,69 @@ class Rhombus {
 
 
 let rhombus_grid = new Rhombus_Grid();
+
+
+
+
+var renderer = PIXI.autoDetectRenderer(800, 600, { antialias: true });
+document.body.appendChild(renderer.view);
+
+// create the root of the scene graph
+var stage = new PIXI.Container();
+
+// stage.interactive = true;
+
+
+var container = new PIXI.Container();
+container.position.x = renderer.width / 2;
+container.position.y = renderer.height / 2;
+
+// add a bunch of sprites
+
+var panda =  PIXI.Sprite.fromImage('../imgs/panda.png');
+panda.anchor.x = 0.5;
+panda.anchor.y = 0.5;
+
+container.addChild(panda);
+
+stage.addChild(container);
+
+// let's create a moving shape
+var thing = new PIXI.Graphics();
+stage.addChild(thing);
+thing.position.x = renderer.width / 2;
+thing.position.y = renderer.height / 2;
+thing.lineStyle(0);
+
+
+
+container.mask = thing;
+// container.mask = thing1;
+
+
+
+animate();
+
+function animate()
+{
+
+
+    thing.clear();
+
+    thing.beginFill(0x8bc5ff, 0.4);
+    thing.moveTo(0, 50);
+    thing.lineTo(50, 0);
+    thing.lineTo(100, 50);
+    thing.lineTo(50, 100);
+
+    thing.moveTo(-70, -20);
+    thing.lineTo(-20, -70);
+    thing.lineTo(30, -20);
+    thing.lineTo(-20, 30);
+
+
+
+
+    renderer.render(stage);
+    requestAnimationFrame(animate);
+}
