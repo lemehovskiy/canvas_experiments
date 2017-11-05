@@ -24,7 +24,7 @@ class Rhombus_Grid {
         self.grid_step_size_x = self.rhombus_width / 2;
         self.grid_step_size_y = self.rhombus_height / 2;
 
-        self.container_width = 400;
+        self.container_width = 600;
 
         self.container_offset_left = (canvas.width - self.container_width) / 2;
         self.container_offset_right = (canvas.width - self.container_width) / 2 + self.container_width;
@@ -35,36 +35,42 @@ class Rhombus_Grid {
         // self.init_rhombus_position_y_points = 0;
 
         self.init_rhombus_position_x = self.container_offset_left + self.container_padding;
-        self.init_rhombus_position_y = self.rhombus_height / 2 + 200;
+        self.init_rhombus_position_y = -self.rhombus_height / 2;
 
 
         // self.draw_grid();
 
-        let figure = self.draw_figure({
-            position_x: self.init_rhombus_position_x,
-            position_y: self.init_rhombus_position_y,
+        self.draw_figure({
+            grid_step_x: 0,
+            grid_step_y: 0,
+            color: '#4286f4'
+        });
+
+
+        self.draw_figure({
+            grid_step_x: 3,
+            grid_step_y: 4,
+            color: '#8e41f4',
             main_ray: [
                 {
-                    direction: 'bottom_right',
-                    steps: 2,
-                    rays: [
-                        {
-                            direction: 'top_right',
-                            steps: 2,
-                            rays: [
-                                {
-                                    direction: 'top_left',
-                                    steps: 1
-                                }
-                            ]
-                        }
-                    ]
+                    steps: -1,
+                    direction: 'top_right'
                 }
             ]
         });
 
+        self.draw_figure({
+            grid_step_x: 4  ,
+            grid_step_y: 5,
+            color: '#f44171',
+            main_ray: [
+                {
+                    steps: -1,
+                    direction: 'top_right'
+                }
+            ]
+        });
 
-        console.log(figure);
 
     }
 
@@ -76,18 +82,18 @@ class Rhombus_Grid {
 
         //init rhombus
         let rhombus = self.create_rhombus({
-            x: options.position_x,
-            y: options.position_y
+            x: self.init_rhombus_position_x + (self.grid_step_size_x * options.grid_step_x),
+            y: self.init_rhombus_position_y + (self.grid_step_size_y * options.grid_step_y),
+            color: options.color
         });
 
         figure_rhombus_arr.push(rhombus);
 
 
         //init ray
-
         draw_rays({
-            position_x: options.position_x,
-            position_y: options.position_y,
+            position_x: self.init_rhombus_position_x + (self.grid_step_size_x * options.grid_step_x),
+            position_y: self.init_rhombus_position_y + (self.grid_step_size_y * options.grid_step_y),
             rays: options.main_ray
         });
 
@@ -96,17 +102,19 @@ class Rhombus_Grid {
 
             // let rhombus_rays = [];
 
-            settings.rays.forEach(function (ray) {
+            if (settings.rays) {
+                settings.rays.forEach(function (ray) {
 
-                draw_ray({
-                    position_x: settings.position_x,
-                    position_y: settings.position_y,
-                    direction: ray.direction,
-                    steps: ray.steps,
-                    rays: ray.rays
-                })
+                    draw_ray({
+                        position_x: settings.position_x,
+                        position_y: settings.position_y,
+                        direction: ray.direction,
+                        steps: ray.steps,
+                        rays: ray.rays
+                    })
 
-            });
+                });
+            }
 
         }
 
@@ -156,7 +164,8 @@ class Rhombus_Grid {
 
                 let rhombus = self.create_rhombus({
                     x: x,
-                    y: y
+                    y: y,
+                    color: options.color
                 });
 
 
@@ -196,7 +205,8 @@ class Rhombus_Grid {
             y: options.y,
             width: self.rhombus_width,
             height: self.rhombus_height,
-            color: '#' + Math.floor(Math.random() * 16777215).toString(16),
+            color: options.color,
+            // color: '#' + Math.floor(Math.random() * 16777215).toString(16),
             coordinate_left: options.coordinate_left,
             coordinate_right: options.coordinate_right,
         });
