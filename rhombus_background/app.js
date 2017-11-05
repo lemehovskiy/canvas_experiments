@@ -18,8 +18,8 @@ class Rhombus_Grid {
 
         self.grid_size = 20;
         self.rhombus_arr = [];
-        self.rhombus_width = 100;
-        self.rhombus_height = 50;
+        self.rhombus_width = 200;
+        self.rhombus_height = 100;
 
         self.grid_step_size_x = self.rhombus_width / 2;
         self.grid_step_size_y = self.rhombus_height / 2;
@@ -29,13 +29,13 @@ class Rhombus_Grid {
         self.container_offset_left = (canvas.width - self.container_width) / 2;
         self.container_offset_right = (canvas.width - self.container_width) / 2 + self.container_width;
 
-        self.container_padding = 50;
+        self.container_padding = 60;
 
         // self.init_rhombus_position_x_points = 0;
         // self.init_rhombus_position_y_points = 0;
 
         self.init_rhombus_position_x = self.container_offset_left + self.container_padding;
-        self.init_rhombus_position_y = self.rhombus_height / 2;
+        self.init_rhombus_position_y = self.rhombus_height / 2 + 200;
 
 
         // self.draw_grid();
@@ -45,25 +45,26 @@ class Rhombus_Grid {
             position_y: self.init_rhombus_position_y,
             main_ray: [
                 {
-                    direction: 'bottom_left',
-                    steps: 1
-                },
-                {
-                    direction: 'top_right',
-                    steps: 1
-                },
-                {
-                    direction: 'top_left',
-                    steps: 1
-                },
-                {
                     direction: 'bottom_right',
-                    steps: -1
+                    steps: 2,
+                    rays: [
+                        {
+                            direction: 'top_right',
+                            steps: 2,
+                            rays: [
+                                {
+                                    direction: 'top_left',
+                                    steps: 1
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         });
 
-        // console.log(figure);
+
+        console.log(figure);
 
     }
 
@@ -71,15 +72,48 @@ class Rhombus_Grid {
 
         let self = this;
 
-        let rhombus_main_ray = [];
+        let figure_rhombus_arr = [];
 
+        //init rhombus
         let rhombus = self.create_rhombus({
             x: options.position_x,
             y: options.position_y
         });
 
+        figure_rhombus_arr.push(rhombus);
 
-        options.main_ray.forEach(function (item) {
+
+        //init ray
+
+        draw_rays({
+            position_x: options.position_x,
+            position_y: options.position_y,
+            rays: options.main_ray
+        });
+
+
+        // console.log(figure_rhombus_arr);
+
+
+        function draw_rays(settings) {
+
+            // let rhombus_rays = [];
+
+            settings.rays.forEach(function (ray) {
+
+                draw_ray({
+                    position_x: settings.position_x,
+                    position_y: settings.position_y,
+                    direction: ray.direction,
+                    steps: ray.steps,
+                    rays: ray.rays
+                })
+
+            });
+
+        }
+
+        function draw_ray(settings) {
 
             let i = 1;
 
@@ -90,45 +124,68 @@ class Rhombus_Grid {
 
             while (draw_statement) {
 
-                switch (item.direction) {
+                switch (settings.direction) {
                     case 'bottom_left':
-                        x = options.position_x - (self.grid_step_size_x * i);
-                        y = options.position_y + (self.grid_step_size_y * i);
+                        x = settings.position_x - (self.grid_step_size_x * i);
+                        y = settings.position_y + (self.grid_step_size_y * i);
                         break;
 
                     case 'top_right':
-                        x = options.position_x + (self.grid_step_size_x * i);
-                        y = options.position_y - (self.grid_step_size_y * i);
+                        x = settings.position_x + (self.grid_step_size_x * i);
+                        y = settings.position_y - (self.grid_step_size_y * i);
                         break;
 
                     case 'top_left':
-                        x = options.position_x - (self.grid_step_size_x * i);
-                        y = options.position_y - (self.grid_step_size_y * i);
+                        x = settings.position_x - (self.grid_step_size_x * i);
+                        y = settings.position_y - (self.grid_step_size_y * i);
                         break;
 
                     case 'bottom_right':
-                        x = options.position_x + (self.grid_step_size_x * i);
-                        y = options.position_y + (self.grid_step_size_y * i);
+                        x = settings.position_x + (self.grid_step_size_x * i);
+                        y = settings.position_y + (self.grid_step_size_y * i);
                         break;
                 }
 
-                self.create_rhombus({
+                i++;
+
+                if (settings.steps == -1) {
+                    draw_statement = x > 0 && x < canvas.width;
+                }
+                else {
+                    draw_statement = (i <= settings.steps);
+                }
+
+
+                let rhombus = self.create_rhombus({
                     x: x,
                     y: y
                 });
 
-                i++;
 
-                if (item.steps == -1) {
-                    console.log('sdf');
-                    draw_statement = x > 0 && x < canvas.width;
+                figure_rhombus_arr.push(rhombus);
+
+
+                //draw sub rays
+                if (settings.rays) {
+
+                    // console.log(figure_rhombus_arr);
+                    draw_rays({
+                        position_x: x,
+                        position_y: y,
+                        rays: settings.rays
+                    });
+
+                    // console.log(figure_rhombus_arr);
                 }
-                else {
-                    draw_statement = (i <= item.steps);
-                }
+
             }
-        });
+
+        }
+
+        return figure_rhombus_arr;
+
     }
+
 
     create_rhombus(options) {
 
@@ -168,14 +225,14 @@ class Rhombus_Grid {
 
     }
 
-    draw_rays() {
-
-        let self = this;
-
-        self.rhombus_arr.forEach(function (item) {
-            console.log(item);
-        })
-    }
+    // draw_rays() {
+    //
+    //     let self = this;
+    //
+    //     self.rhombus_arr.forEach(function (item) {
+    //         console.log(item);
+    //     })
+    // }
 
     draw_center_axis() {
         let self = this;
