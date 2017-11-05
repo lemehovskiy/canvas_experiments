@@ -92,9 +92,6 @@ class Rhombus_Grid {
         });
 
 
-        // console.log(figure_rhombus_arr);
-
-
         function draw_rays(settings) {
 
             // let rhombus_rays = [];
@@ -125,9 +122,10 @@ class Rhombus_Grid {
             while (draw_statement) {
 
                 switch (settings.direction) {
-                    case 'bottom_left':
+
+                    case 'top_left':
                         x = settings.position_x - (self.grid_step_size_x * i);
-                        y = settings.position_y + (self.grid_step_size_y * i);
+                        y = settings.position_y - (self.grid_step_size_y * i);
                         break;
 
                     case 'top_right':
@@ -135,9 +133,9 @@ class Rhombus_Grid {
                         y = settings.position_y - (self.grid_step_size_y * i);
                         break;
 
-                    case 'top_left':
+                    case 'bottom_left':
                         x = settings.position_x - (self.grid_step_size_x * i);
-                        y = settings.position_y - (self.grid_step_size_y * i);
+                        y = settings.position_y + (self.grid_step_size_y * i);
                         break;
 
                     case 'bottom_right':
@@ -204,150 +202,7 @@ class Rhombus_Grid {
         });
 
         return rhombus;
-
-        // self.rhombus_arr.push({
-        //     rhombus: rhombus,
-        // });
     }
-
-    draw_grid() {
-
-        let self = this;
-
-        //draw center axis
-        // self.draw_center_axis();
-
-
-        // self.draw_rays();
-
-
-        // self.draw_rows();
-
-    }
-
-    // draw_rays() {
-    //
-    //     let self = this;
-    //
-    //     self.rhombus_arr.forEach(function (item) {
-    //         console.log(item);
-    //     })
-    // }
-
-    draw_center_axis() {
-        let self = this;
-
-
-        let offset_y = self.init_rhombus_position_y;
-
-        let coordinate_left = 0;
-        let coordinate_right = 0;
-
-        //draw_init_rhombus
-        self.create_rhombus({
-            x: self.init_rhombus_position_x,
-            y: offset_y,
-            coordinate_left: coordinate_left,
-            coordinate_right: coordinate_right
-        });
-
-        //draw axis to top
-
-        coordinate_left = 0;
-        coordinate_right = 0;
-
-        while (offset_y > 0) {
-            offset_y -= self.rhombus_height;
-
-            self.create_rhombus({
-                x: self.init_rhombus_position_x,
-                y: offset_y,
-                coordinate_left: --coordinate_left,
-                coordinate_right: --coordinate_right
-            });
-        }
-
-
-        //draw axis to bottom
-
-        offset_y = self.init_rhombus_position_y + self.rhombus_height;
-
-        coordinate_left = 0;
-        coordinate_right = 0;
-
-        while (offset_y < canvas.height) {
-
-            self.create_rhombus({
-                x: self.init_rhombus_position_x,
-                y: offset_y,
-                coordinate_left: ++coordinate_left,
-                coordinate_right: ++coordinate_right
-            });
-
-            offset_y += self.rhombus_height;
-        }
-
-    }
-
-    draw_rows() {
-
-        let self = this;
-
-        let y = self.init_rhombus_position_y;
-
-        let row = 1;
-
-        let draw_to_left_x = self.init_rhombus_position_x - self.rhombus_width;
-        let draw_to_right_x = self.init_rhombus_position_x + self.rhombus_width;
-
-
-        //draw row
-        while (y < canvas.height) {
-
-            //draw row to left
-            while (draw_to_left_x + self.rhombus_width > 0) {
-
-                self.create_rhombus({
-                    x: draw_to_left_x,
-                    y: y
-                });
-
-                draw_to_left_x -= self.rhombus_width;
-            }
-
-            //draw row to right
-            while (draw_to_right_x < canvas.width) {
-
-                self.create_rhombus({
-                    x: draw_to_right_x,
-                    y: y
-                });
-
-                draw_to_right_x += self.rhombus_width;
-            }
-
-
-            y += self.rhombus_height / 2;
-
-            row++;
-
-            //reset draw position
-
-            if (row % 2 == 0) {
-                draw_to_left_x = self.init_rhombus_position_x - self.rhombus_width / 2;
-                draw_to_right_x = self.init_rhombus_position_x + self.rhombus_width / 2;
-            }
-
-            else {
-                draw_to_left_x = self.init_rhombus_position_x - self.rhombus_width;
-                draw_to_right_x = self.init_rhombus_position_x;
-            }
-
-        }
-
-        console.log(self.rhombus_arr);
-    }
-
 }
 
 class Rhombus {
