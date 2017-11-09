@@ -1,7 +1,14 @@
+window.onblur = function () {
+    window.blurred = true;
+};
+window.onfocus = function () {
+    window.blurred = false;
+};
+
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-canvas.width = 1000;
+canvas.width = 600;
 canvas.height = 500;
 
 
@@ -20,13 +27,15 @@ class Game {
 
         init();
 
-        function init (){
+        function init() {
 
             draw();
 
             createEnemies();
 
         }
+
+        self.controls();
 
 
         function draw() {
@@ -72,22 +81,25 @@ class Game {
             requestAnimationFrame(draw);
         }
 
-        function restart(){
-
-        }
 
         function createEnemies() {
 
-            setInterval(function () {
+            let emenies_interval = setInterval(function () {
+
+                if (window.blurred) {
+                    return;
+                }
+
                 var enemy = new EnemiesShip();
 
                 self.enemies.push(enemy);
 
             }, 2000)
 
+
         }
 
-        function updateScore(){
+        function updateScore() {
 
             ctx.font = "20px Comic Sans MS";
             ctx.fillStyle = "red";
@@ -101,12 +113,52 @@ class Game {
         }
 
 
-        function restart (){
+        function restart() {
             self.lives = 5;
             self.enemies = [];
 
         }
 
+    }
+
+    controls() {
+
+        // document.addEventListener("keydown", function (e) {
+        //
+        //     switch (e.keyCode) {
+        //         case 32:
+        //             ShipFighterGame.shipFighter.shoot();
+        //             break;
+        //     }
+        // });
+
+
+        document.addEventListener("keydown", function (e) {
+
+            console.log(e);
+
+            switch (e.keyCode) {
+                case 37:
+                    ShipFighterGame.shipFighter.move('left');
+                    break;
+                case 39:
+                    ShipFighterGame.shipFighter.move('right');
+                    break;
+            }
+        });
+
+        // interval = setInterval(function(){
+        //     ShipFighterGame.shipFighter.move('left');
+        // }, 100)
+
+
+        document.addEventListener("keyup", function (e) {
+
+            if (e.keyCode == 37 || e.keyCode == 39) {
+                ShipFighterGame.shipFighter.stop();
+            }
+
+        });
     }
 
 
@@ -116,6 +168,8 @@ class Game {
 class ShipFighter {
 
     constructor() {
+
+        let self = this;
 
         this.bullets = [];
 
@@ -127,34 +181,64 @@ class ShipFighter {
         this.x = canvas.width / 2 + this.width / 2;
         this.y = canvas.height - this.height;
 
-        this.acceleration = 5;
+
+        self.stop_timeout = null;
+
+        self.acceleration = 0;
+
+        self.max_speed = 5;
+
+        self.velocity = 0.6;
+
+        self.stop_interval = null;
+        // this.acceleration = 5;
 
     }
 
 
     draw() {
+
+        let self = this;
+
         ctx.fillStyle = '#ff0000';
         ctx.beginPath();
         ctx.moveTo(this.x + this.width / 2, this.y);
         ctx.lineTo(this.x, this.y + this.height);
         ctx.lineTo(this.x + this.width, this.y + this.height);
         ctx.fill();
+
+
+        self.x += self.acceleration;
+
+
+    }
+
+    stop() {
+
+        let self = this;
+        TweenMax.to(self, 0.5, {acceleration: 0});
+
     }
 
 
     move(direction) {
 
+        let self = this;
+
+
         if (direction == 'left') {
-            this.x -= this.acceleration++;
+            TweenMax.to(self, 0.5, {acceleration: -5});
         }
 
-        if (direction == 'right') {
-            this.x += this.acceleration++;
+        else if (direction == 'right') {
+            TweenMax.to(self, 0.5, {acceleration: 5});
         }
 
     }
 
     shoot() {
+
+        console.log('bullet');
 
         let bullet = new Bullet(this.x + (this.width / 2), this.y);
 
@@ -199,26 +283,3 @@ class EnemiesShip {
 
 let ShipFighterGame = new Game();
 
-
-document.addEventListener("keydown", function (e) {
-
-
-    if (e.keyCode == 37) {
-        ShipFighterGame.shipFighter.move('left');
-    }
-
-    else if (e.keyCode == 39) {
-        ShipFighterGame.shipFighter.move('right');
-    }
-
-    if (e.keyCode == 32) {
-        ShipFighterGame.shipFighter.shoot();
-    }
-
-});
-
-document.addEventListener("keyup", function (e) {
-
-    ShipFighterGame.shipFighter.acceleration = 1;
-
-});
