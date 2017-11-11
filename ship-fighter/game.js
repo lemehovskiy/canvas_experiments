@@ -24,6 +24,7 @@ class Game {
 
         self.lives = 5;
 
+        self.score = 0;
 
         init();
 
@@ -45,35 +46,53 @@ class Game {
 
             self.shipFighter.draw();
 
-            self.shipFighter.bullets.forEach(function (item, i) {
+            self.shipFighter.bullets.forEach(function (bullet, bullet_index) {
 
-                if (item.y < 0) {
-                    self.shipFighter.bullets.splice(i, 1);
+
+                self.enemies.forEach(function (enemy, enemy_index) {
+                    if (
+                        bullet.x > enemy.x &&
+                        bullet.x < enemy.x + enemy.width &&
+                        bullet.y <= enemy.y + enemy.height &&
+                        bullet.y > enemy.y
+
+                    ) {
+                        self.enemies.splice(enemy_index, 1);
+                        self.shipFighter.bullets.splice(bullet_index, 1);
+
+                        self.score += 10;
+
+                        updateScore();
+                    }
+                });
+
+
+                if (bullet.y < 0) {
+                    self.shipFighter.bullets.splice(bullet_index, 1);
                 }
 
                 else {
-                    item.draw();
+                    bullet.draw();
                 }
 
             });
 
-            self.enemies.forEach(function (item, i) {
-
-
-                if (item.y > canvas.height) {
+            self.enemies.forEach(function (enemy, i) {
+                if (enemy.y > canvas.height) {
                     self.enemies.splice(i, 1);
                     self.lives--;
 
                 }
                 else {
-                    item.draw();
+                    enemy.draw();
                 }
-
             })
 
             if (self.lives == 0) {
                 restart();
             }
+
+            updateLives();
 
             updateScore();
 
@@ -90,7 +109,7 @@ class Game {
                     return;
                 }
 
-                var enemy = new EnemiesShip();
+                let enemy = new EnemiesShip();
 
                 self.enemies.push(enemy);
 
@@ -99,17 +118,26 @@ class Game {
 
         }
 
-        function updateScore() {
+        function updateLives() {
 
             ctx.font = "20px Comic Sans MS";
             ctx.fillStyle = "red";
-            // ctx.textAlign = "center";
+            ctx.textAlign = "start";
 
             if (self.lives === 0) {
                 restart();
             }
 
-            ctx.fillText('Lives: ' + self.lives, 20, 20 + 10);
+            ctx.fillText('Lives: ' + self.lives, 20, 30);
+        }
+
+        function updateScore() {
+
+            ctx.font = "20px Comic Sans MS";
+            ctx.fillStyle = "red";
+            ctx.textAlign = "end";
+
+            ctx.fillText('Score: ' + self.score, canvas.width - 20, 30);
         }
 
 
@@ -123,19 +151,8 @@ class Game {
 
     controls() {
 
-        // document.addEventListener("keydown", function (e) {
-        //
-        //     switch (e.keyCode) {
-        //         case 32:
-        //             ShipFighterGame.shipFighter.shoot();
-        //             break;
-        //     }
-        // });
-
 
         document.addEventListener("keydown", function (e) {
-
-            console.log(e);
 
             switch (e.keyCode) {
                 case 37:
@@ -144,13 +161,11 @@ class Game {
                 case 39:
                     ShipFighterGame.shipFighter.move('right');
                     break;
+                case 32:
+                    ShipFighterGame.shipFighter.shoot();
+                    break;
             }
         });
-
-        // interval = setInterval(function(){
-        //     ShipFighterGame.shipFighter.move('left');
-        // }, 100)
-
 
         document.addEventListener("keyup", function (e) {
 
@@ -227,18 +242,16 @@ class ShipFighter {
 
 
         if (direction == 'left') {
-            TweenMax.to(self, 0.5, {acceleration: -5});
+            TweenMax.to(self, 1, {acceleration: -5});
         }
 
         else if (direction == 'right') {
-            TweenMax.to(self, 0.5, {acceleration: 5});
+            TweenMax.to(self, 1, {acceleration: 5});
         }
 
     }
 
     shoot() {
-
-        console.log('bullet');
 
         let bullet = new Bullet(this.x + (this.width / 2), this.y);
 
