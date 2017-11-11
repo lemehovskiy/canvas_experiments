@@ -143,6 +143,7 @@ class Game {
 
         function restart() {
             self.lives = 5;
+            self.score = 0;
             self.enemies = [];
 
         }
@@ -265,7 +266,7 @@ class Bullet {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.size = 2;
+        this.size = 20;
     }
 
     draw() {
