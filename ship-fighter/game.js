@@ -193,27 +193,17 @@ class ShipFighter {
 
         let self = this;
 
-        this.bullets = [];
+        self.bullets = [];
 
-        this.shipColor = 'ff0000';
+        self.shipColor = '#ff0000';
 
-        this.height = 25;
-        this.width = 20;
+        self.height = 25;
+        self.width = 20;
 
-        this.x = canvas.width / 2 + this.width / 2;
-        this.y = canvas.height - this.height;
-
-
-        self.stop_timeout = null;
+        self.x = canvas.width / 2 + this.width / 2;
+        self.y = canvas.height - this.height;
 
         self.acceleration = 0;
-
-        self.max_speed = 5;
-
-        self.velocity = 0.6;
-
-        self.stop_interval = null;
-        // this.acceleration = 5;
 
     }
 
@@ -222,7 +212,7 @@ class ShipFighter {
 
         let self = this;
 
-        ctx.fillStyle = '#ff0000';
+        ctx.fillStyle = self.shipColor;
         ctx.beginPath();
         ctx.moveTo(this.x + this.width / 2, this.y);
         ctx.lineTo(this.x, this.y + this.height);
@@ -270,13 +260,20 @@ class ShipFighter {
 
 class Bullet {
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.size = 20;
+
+        let self = this;
+
+        self.x = x;
+        self.y = y;
+        self.size = 20;
+
+        self.color = "#ffffff";
     }
 
     draw() {
-        ctx.fillStyle = "#ff0000";
+        let self = this;
+
+        ctx.fillStyle = self.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y--, this.size, 0, 2 * Math.PI);
         ctx.fill();
@@ -285,16 +282,22 @@ class Bullet {
 
 class EnemiesShip {
     constructor() {
-        this.width = 10;
-        this.height = 20;
 
-        this.x = _.random(0, canvas.width - this.width);
-        this.y = -this.height;
+        let self = this;
+
+        self.width = 10;
+        self.height = 20;
+
+        self.x = _.random(0, canvas.width - self.width);
+        self.y = -self.height;
     }
 
     draw() {
+
+        let self = this;
+
         ctx.fillStyle = "#ff0000";
-        ctx.rect(this.x, this.y++, this.width, this.height);
+        ctx.rect(self.x, self.y++, self.width, self.height);
         ctx.stroke();
         ctx.fill();
     }
