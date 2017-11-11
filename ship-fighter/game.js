@@ -46,9 +46,23 @@ class Game {
 
             self.shipFighter.draw();
 
+            render_bullets();
+
+            render_ememies();
+
+            updateLives();
+
+            updateScore();
+
+            if (self.lives == 0) {
+                restart();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function render_bullets(){
             self.shipFighter.bullets.forEach(function (bullet, bullet_index) {
-
-
                 self.enemies.forEach(function (enemy, enemy_index) {
                     if (
                         bullet.x > enemy.x &&
@@ -77,6 +91,9 @@ class Game {
 
             });
 
+        }
+
+        function render_ememies() {
             self.enemies.forEach(function (enemy, i) {
                 if (enemy.y > canvas.height) {
                     self.enemies.splice(i, 1);
@@ -87,17 +104,6 @@ class Game {
                     enemy.draw();
                 }
             })
-
-            if (self.lives == 0) {
-                restart();
-            }
-
-            updateLives();
-
-            updateScore();
-
-
-            requestAnimationFrame(draw);
         }
 
 
