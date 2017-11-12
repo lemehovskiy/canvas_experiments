@@ -44,11 +44,14 @@ class Game {
             ctx.fillStyle = "rgba(0,0,0,1)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+
             self.shipFighter.draw();
 
             render_bullets();
 
-            render_ememies();
+            render_enemies();
+
+
 
             updateLives();
 
@@ -61,8 +64,24 @@ class Game {
             requestAnimationFrame(draw);
         }
 
+        function render_enemies() {
+
+            self.enemies.forEach(function (enemy, i) {
+                enemy.draw();
+
+                if (enemy.y > canvas.height) {
+                    self.enemies.splice(i, 1);
+                    self.lives--;
+
+                }
+            })
+        }
+
         function render_bullets(){
             self.shipFighter.bullets.forEach(function (bullet, bullet_index) {
+
+                bullet.draw();
+
                 self.enemies.forEach(function (enemy, enemy_index) {
                     if (
                         bullet.x > enemy.x &&
@@ -85,29 +104,16 @@ class Game {
                     self.shipFighter.bullets.splice(bullet_index, 1);
                 }
 
-                else {
-                    bullet.draw();
-                }
 
             });
 
         }
 
-        function render_ememies() {
-            self.enemies.forEach(function (enemy, i) {
-                if (enemy.y > canvas.height) {
-                    self.enemies.splice(i, 1);
-                    self.lives--;
-
-                }
-                else {
-                    enemy.draw();
-                }
-            })
-        }
-
 
         function createEnemies() {
+
+            let enemy = new EnemiesShip();
+            self.enemies.push(enemy);
 
             let emenies_interval = setInterval(function () {
 
@@ -127,7 +133,7 @@ class Game {
         function updateLives() {
 
             ctx.font = "20px Comic Sans MS";
-            ctx.fillStyle = "red";
+            ctx.fillStyle = "green";
             ctx.textAlign = "start";
 
             if (self.lives === 0) {
@@ -140,7 +146,7 @@ class Game {
         function updateScore() {
 
             ctx.font = "20px Comic Sans MS";
-            ctx.fillStyle = "red";
+            ctx.fillStyle = "green";
             ctx.textAlign = "end";
 
             ctx.fillText('Score: ' + self.score, canvas.width - 20, 30);
@@ -195,7 +201,7 @@ class ShipFighter {
 
         self.bullets = [];
 
-        self.shipColor = '#ff0000';
+        self.shipColor = '#ffff11';
 
         self.height = 25;
         self.width = 20;
@@ -212,13 +218,15 @@ class ShipFighter {
 
         let self = this;
 
-        ctx.fillStyle = self.shipColor;
+
         ctx.beginPath();
         ctx.moveTo(this.x + this.width / 2, this.y);
         ctx.lineTo(this.x, this.y + this.height);
         ctx.lineTo(this.x + this.width, this.y + this.height);
-        ctx.fill();
+        ctx.closePath();
 
+        ctx.fillStyle = self.shipColor;
+        ctx.fill();
 
         self.x += self.acceleration;
 
@@ -265,17 +273,20 @@ class Bullet {
 
         self.x = x;
         self.y = y;
-        self.size = 20;
+        self.size = 2;
 
         self.color = "#ffffff";
     }
 
     draw() {
+
         let self = this;
 
-        ctx.fillStyle = self.color;
         ctx.beginPath();
-        ctx.arc(this.x, this.y--, this.size, 0, 2 * Math.PI);
+        ctx.arc(self.x, self.y--, self.size, 0, 2 * Math.PI);
+        ctx.closePath();
+
+        ctx.fillStyle = self.color;
         ctx.fill();
     }
 }
@@ -288,6 +299,8 @@ class EnemiesShip {
         self.width = 10;
         self.height = 20;
 
+        self.color = "#FF0000";
+
         self.x = _.random(0, canvas.width - self.width);
         self.y = -self.height;
     }
@@ -296,9 +309,11 @@ class EnemiesShip {
 
         let self = this;
 
-        ctx.fillStyle = "#ff0000";
+        ctx.beginPath();
         ctx.rect(self.x, self.y++, self.width, self.height);
-        ctx.stroke();
+        ctx.closePath();
+
+        ctx.fillStyle = self.color;
         ctx.fill();
     }
 }
