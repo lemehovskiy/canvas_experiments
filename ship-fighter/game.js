@@ -41,7 +41,7 @@ class Game {
 
         function draw() {
 
-            ctx.fillStyle = "rgba(0,0,0,1)";
+            ctx.fillStyle = "rgba(0,0,0,0.6)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
@@ -282,8 +282,10 @@ class Bullet {
 
         let self = this;
 
+        self.y -= 3;
+
         ctx.beginPath();
-        ctx.arc(self.x, self.y--, self.size, 0, 2 * Math.PI);
+        ctx.arc(self.x, self.y, self.size, 0, 2 * Math.PI);
         ctx.closePath();
 
         ctx.fillStyle = self.color;
