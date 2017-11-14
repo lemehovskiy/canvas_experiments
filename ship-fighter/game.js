@@ -52,7 +52,6 @@ class Game {
             render_enemies();
 
 
-
             updateLives();
 
             updateScore();
@@ -77,7 +76,7 @@ class Game {
             })
         }
 
-        function render_bullets(){
+        function render_bullets() {
             self.shipFighter.bullets.forEach(function (bullet, bullet_index) {
 
                 bullet.draw();
@@ -227,6 +226,17 @@ class ShipFighter {
 
         ctx.fillStyle = self.shipColor;
         ctx.fill();
+
+        console.log(self.x);
+
+        if (self.x < -self.width / 2 - +self.acceleration) {
+            self.x = -self.width / 2;
+        }
+
+        else if (self.x > canvas.width - self.width / 2 + self.acceleration) {
+            self.x = canvas.width - self.width / 2 + self.acceleration;
+        }
+
 
         self.x += self.acceleration;
 
