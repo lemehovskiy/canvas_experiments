@@ -79,24 +79,35 @@ class Game {
         function render_bullets() {
             self.shipFighter.bullets.forEach(function (bullet, bullet_index) {
 
-                bullet.draw();
+                if (bullet.exploded) {
+                    bullet.draw_parts();
 
-                self.enemies.forEach(function (enemy, enemy_index) {
-                    if (
-                        bullet.x > enemy.x &&
-                        bullet.x < enemy.x + enemy.width &&
-                        bullet.y <= enemy.y + enemy.height &&
-                        bullet.y > enemy.y
-
-                    ) {
-                        self.enemies.splice(enemy_index, 1);
+                    if (bullet.parts.length == 0) {
                         self.shipFighter.bullets.splice(bullet_index, 1);
-
-                        self.score += 10;
-
-                        updateScore();
                     }
-                });
+                }
+                else {
+                    bullet.draw();
+
+                    self.enemies.forEach(function (enemy, enemy_index) {
+                        if (
+                            bullet.x > enemy.x &&
+                            bullet.x < enemy.x + enemy.width &&
+                            bullet.y <= enemy.y + enemy.height &&
+                            bullet.y > enemy.y
+
+                        ) {
+                            self.enemies.splice(enemy_index, 1);
+
+                            bullet.explode();
+
+
+                            self.score += 10;
+
+                            updateScore();
+                        }
+                    });
+                }
 
 
                 if (bullet.y < 0) {
@@ -227,7 +238,6 @@ class ShipFighter {
         ctx.fillStyle = self.shipColor;
         ctx.fill();
 
-        console.log(self.x);
 
         if (self.x < -self.width / 2 - +self.acceleration) {
             self.x = -self.width / 2;
@@ -286,6 +296,47 @@ class Bullet {
         self.size = 2;
 
         self.color = "#ffffff";
+
+        self.parts = [];
+
+        self.exploded = false;
+    }
+
+    explode(){
+
+        let self = this;
+
+        self.exploded = true;
+
+        let poolRadius = 500;
+
+        for (let i = 0; i < 50; i++) {
+
+            let angle = Math.random() * Math.PI * 2; //random angle in radians
+            let radius = Math.random() * poolRadius;
+
+            let part = new Part({
+                x: self.x,
+                y: self.y,
+                move_to_x: Math.cos(angle) * radius + self.x,
+                move_to_y: Math.sin(angle) * radius + self.y,
+            });
+
+            self.parts.push(part);
+        }
+    }
+
+    draw_parts(){
+
+        let self = this;
+
+        self.parts.forEach(function(part, index){
+            part.draw();
+
+            if (part.life <= 0) {
+                self.parts.splice(index, 1);
+            }
+        })
     }
 
     draw() {
@@ -300,6 +351,7 @@ class Bullet {
 
         ctx.fillStyle = self.color;
         ctx.fill();
+
     }
 }
 
@@ -323,6 +375,40 @@ class EnemiesShip {
 
         ctx.beginPath();
         ctx.rect(self.x, self.y++, self.width, self.height);
+        ctx.closePath();
+
+        ctx.fillStyle = self.color;
+        ctx.fill();
+    }
+}
+
+class Part{
+    constructor(options){
+        let self = this;
+
+        self.width = 5;
+        self.height = 5;
+
+        self.color = "#FF0000";
+
+        self.x = options.x;
+        self.y = options.y;
+
+
+        TweenMax.to(self, 2, {x: options.move_to_x});
+        TweenMax.to(self, 2, {y: options.move_to_y});
+
+        self.life = 5;
+    }
+
+    draw() {
+
+        let self = this;
+
+        self.life -= 0.4;
+
+        ctx.beginPath();
+        ctx.rect(self.x, self.y, self.width, self.height);
         ctx.closePath();
 
         ctx.fillStyle = self.color;
