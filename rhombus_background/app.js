@@ -79,6 +79,12 @@ class Rhombus_Grid {
 
                             parts: [
                                 {
+                                    direction: 'bottom_left',
+                                    offset: 1,
+                                    length: 2,
+                                    color: '0x4286f4',
+                                },
+                                {
                                     direction: 'bottom_right',
                                     offset: 0,
                                     length: 2,
