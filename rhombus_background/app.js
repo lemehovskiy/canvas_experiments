@@ -60,35 +60,51 @@ class Rhombus_Grid {
         self.init_rhombus_position_y = -self.rhombus_height / 2;
 
 
+        // console.log(self.init_rhombus_position_x);
         // self.draw_grid();
 
         let figure_1 = self.get_figure({
-            grid_step_x: 0,
-            grid_step_y: 0,
-            color: '0x4286f4'
-        });
-
-
-        let figure_2 = self.get_figure({
-            grid_step_x: 3,
-            grid_step_y: 4,
-            color: '0x8e41f4',
-            main_ray: [
+            figures: [
                 {
-                    steps: -1,
-                    direction: 'top_right'
-                }
-            ]
-        });
+                    init_position_x: self.init_rhombus_position_x,
+                    init_position_y: self.init_rhombus_position_y,
+                    color: '0x4286f4',
 
-        let figure_3 = self.get_figure({
-            grid_step_x: 4,
-            grid_step_y: 5,
-            color: '0xf44171',
-            main_ray: [
-                {
-                    steps: -1,
-                    direction: 'top_right'
+                    parts: [
+                        {
+                            direction: 'bottom_right',
+                            offset: 0,
+                            length: 1,
+                            color: '0x4286f4',
+
+                            parts: [
+                                {
+                                    direction: 'bottom_right',
+                                    offset: 0,
+                                    length: 2,
+                                    color: '0x4286f4',
+
+                                    parts: [
+                                        {
+                                            direction: 'bottom_left',
+                                            offset: 1,
+                                            length: 2,
+                                            color: '0x4286f4',
+
+                                            parts: [
+                                                {
+                                                    direction: 'bottom_right',
+                                                    offset: 1,
+                                                    length: 2,
+                                                    color: '0x4286f4'
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         });
@@ -100,19 +116,155 @@ class Rhombus_Grid {
             }
         );
 
-        self.draw_figure(
-            {
-                figure_obj: figure_2
-            }
-        );
 
-        self.draw_figure(
-            {
-                figure_obj: figure_3,
-                background_img: '../imgs/panda.png'
-            }
-        );
+    }
 
+    get_figure(options) {
+
+        let self = this;
+
+        let generated_figure = {
+            parts: []
+        };
+
+
+        options.figures.forEach(function (figure) {
+
+            let offset_x = figure.init_position_x;
+            let offset_y = figure.init_position_y;
+
+            // console.log(figure.init_position_x);
+            //init rhombus
+
+            generated_figure.parts.push(
+                self.create_rhombus({
+                    x: figure.init_position_x,
+                    y: figure.init_position_y,
+                    color: figure.color
+                })
+            );
+
+
+            figure.parts.forEach(function (part) {
+                draw_ray({
+                    part: part,
+                    offset_x: offset_x,
+                    offset_y: offset_y
+                });
+            })
+
+
+        })
+
+
+        function draw_ray(settings) {
+
+            let i = 1;
+
+            let offset_x = settings.offset_x;
+            let offset_y = settings.offset_y;
+
+            let draw_statement = true;
+
+
+            if (settings.part.offset > 0) {
+                switch (settings.part.direction) {
+                    case 'top_left':
+                        offset_x = offset_x - self.grid_step_size_x * settings.part.offset;
+                        offset_y = offset_y - self.grid_step_size_y * settings.part.offset;
+                        break;
+
+                    case 'top_right':
+                        offset_x = offset_x + self.grid_step_size_x * settings.part.offset;
+                        offset_y = offset_y - self.grid_step_size_y * settings.part.offset;
+                        break;
+
+                    case 'bottom_left':
+                        offset_x = offset_x - self.grid_step_size_x * settings.part.offset;
+                        offset_y = offset_y + self.grid_step_size_y * settings.part.offset;
+                        break;
+
+                    case 'bottom_right':
+                        offset_x = offset_x + self.grid_step_size_x * settings.part.offset;
+                        offset_y = offset_y + self.grid_step_size_y * settings.part.offset;
+                        break;
+                }
+            }
+
+
+            while (draw_statement) {
+
+
+                switch (settings.part.direction) {
+
+                    case 'top_left':
+                        offset_x = offset_x - self.grid_step_size_x;
+                        offset_y = offset_y - self.grid_step_size_y;
+                        break;
+
+                    case 'top_right':
+                        offset_x = offset_x + self.grid_step_size_x;
+                        offset_y = offset_y - self.grid_step_size_y;
+                        break;
+
+                    case 'bottom_left':
+                        offset_x = offset_x - self.grid_step_size_x;
+                        offset_y = offset_y + self.grid_step_size_y;
+                        break;
+
+                    case 'bottom_right':
+                        offset_x = offset_x + self.grid_step_size_x;
+                        offset_y = offset_y + self.grid_step_size_y;
+                        break;
+                }
+
+                i++;
+
+                if (settings.part.length == -1) {
+                    draw_statement = offset_x > 0 && offset_x < canvas_width;
+                }
+                else {
+                    draw_statement = (i <= settings.part.length);
+                }
+
+                // console.log(generated_figure);
+
+                generated_figure.parts.push(
+                    self.create_rhombus({
+                        x: offset_x,
+                        y: offset_y,
+                        color: settings.part.color
+                    })
+                );
+
+
+            }
+
+            //draw sub rays
+
+            if (settings.part.parts) {
+
+                settings.part.parts.forEach(function (part) {
+
+                    draw_ray({
+                        part: part,
+                        offset_x: offset_x,
+                        offset_y: offset_y
+                    })
+
+                })
+            }
+
+        }
+
+        // add coordinates
+        generated_figure.coordinates = self.get_figure_position(generated_figure.parts);
+
+        // add size
+        generated_figure.size = self.get_figure_size(generated_figure.parts);
+
+
+        return generated_figure;
 
     }
 
@@ -190,6 +342,8 @@ class Rhombus_Grid {
 
     draw_figure(options) {
 
+        console.log(options);
+
         let self = this;
 
         let container = new PIXI.Container();
@@ -228,6 +382,8 @@ class Rhombus_Grid {
 
         figure.clear();
 
+        // console.log(options);
+
         options.figure_obj.parts.forEach(function (rhombus_item) {
 
             figure.beginFill(rhombus_item.color, 1);
@@ -258,138 +414,11 @@ class Rhombus_Grid {
 
     }
 
-    get_figure(options) {
-
-        let self = this;
-
-        let figure = {
-            parts: []
-        };
-
-        //init rhombus
-        let rhombus = self.create_rhombus({
-            x: self.init_rhombus_position_x + (self.grid_step_size_x * options.grid_step_x),
-            y: self.init_rhombus_position_y + (self.grid_step_size_y * options.grid_step_y),
-            color: options.color
-        });
-
-        figure.parts.push(rhombus);
-
-
-        //init ray
-        draw_rays({
-            position_x: self.init_rhombus_position_x + (self.grid_step_size_x * options.grid_step_x),
-            position_y: self.init_rhombus_position_y + (self.grid_step_size_y * options.grid_step_y),
-            rays: options.main_ray
-        });
-
-
-        function draw_rays(settings) {
-
-            // let rhombus_rays = [];
-
-            if (settings.rays) {
-                settings.rays.forEach(function (ray) {
-
-                    draw_ray({
-                        position_x: settings.position_x,
-                        position_y: settings.position_y,
-                        direction: ray.direction,
-                        steps: ray.steps,
-                        rays: ray.rays
-                    })
-
-                });
-            }
-
-        }
-
-        function draw_ray(settings) {
-
-            let i = 1;
-
-            let x = 0;
-            let y = 0;
-
-            let draw_statement = true;
-
-            while (draw_statement) {
-
-                switch (settings.direction) {
-
-                    case 'top_left':
-                        x = settings.position_x - (self.grid_step_size_x * i);
-                        y = settings.position_y - (self.grid_step_size_y * i);
-                        break;
-
-                    case 'top_right':
-                        x = settings.position_x + (self.grid_step_size_x * i);
-                        y = settings.position_y - (self.grid_step_size_y * i);
-                        break;
-
-                    case 'bottom_left':
-                        x = settings.position_x - (self.grid_step_size_x * i);
-                        y = settings.position_y + (self.grid_step_size_y * i);
-                        break;
-
-                    case 'bottom_right':
-                        x = settings.position_x + (self.grid_step_size_x * i);
-                        y = settings.position_y + (self.grid_step_size_y * i);
-                        break;
-                }
-
-                i++;
-
-                if (settings.steps == -1) {
-                    draw_statement = x > 0 && x < canvas_width;
-                }
-                else {
-                    draw_statement = (i <= settings.steps);
-                }
-
-
-                let rhombus = self.create_rhombus({
-                    x: x,
-                    y: y,
-                    color: options.color
-                });
-
-
-                figure.parts.push(rhombus);
-
-
-                //draw sub rays
-                if (settings.rays) {
-
-                    // console.log(figure_rhombus_arr);
-                    draw_rays({
-                        position_x: x,
-                        position_y: y,
-                        rays: settings.rays
-                    });
-
-                    // console.log(figure_rhombus_arr);
-                }
-
-            }
-
-        }
-
-        // add coordinates
-        figure.coordinates = self.get_figure_position(figure.parts);
-
-        // add size
-        figure.size = self.get_figure_size(figure.parts);
-
-
-        return figure;
-
-    }
-
 
     create_rhombus(options) {
 
-        // console.log(options);
+        // console.log('create_thumbus');
+
 
         let self = this;
 
