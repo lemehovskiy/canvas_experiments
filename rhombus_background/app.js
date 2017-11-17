@@ -79,32 +79,18 @@ class Rhombus_Grid {
 
                             parts: [
                                 {
-                                    direction: 'bottom_left',
-                                    offset: 1,
-                                    length: 2,
-                                    color: '0x4286f4',
-                                },
-                                {
                                     direction: 'bottom_right',
-                                    offset: 0,
-                                    length: 2,
+                                    offset: 2,
+                                    length: 5,
                                     color: '0x4286f4',
 
                                     parts: [
                                         {
                                             direction: 'bottom_left',
                                             offset: 1,
-                                            length: 2,
+                                            length: 3,
                                             color: '0x4286f4',
-
-                                            parts: [
-                                                {
-                                                    direction: 'bottom_right',
-                                                    offset: 1,
-                                                    length: 2,
-                                                    color: '0x4286f4'
-                                                }
-                                            ]
+                                            apply_for_all: true
                                         }
                                     ]
                                 }
@@ -244,19 +230,37 @@ class Rhombus_Grid {
                 );
 
 
+                //draw sub part apply for all
+                if (settings.part.parts) {
+                    settings.part.parts.forEach(function (part) {
+
+                        if (part.apply_for_all) {
+                            draw_ray({
+                                part: part,
+                                offset_x: offset_x,
+                                offset_y: offset_y
+                            })
+                        }
+
+                    })
+                }
+
+
             }
 
-            //draw sub rays
+            //draw sub part apply to last
 
             if (settings.part.parts) {
 
                 settings.part.parts.forEach(function (part) {
 
-                    draw_ray({
-                        part: part,
-                        offset_x: offset_x,
-                        offset_y: offset_y
-                    })
+                    if (!(part.hasOwnProperty('apply_for_all'))) {
+                        draw_ray({
+                            part: part,
+                            offset_x: offset_x,
+                            offset_y: offset_y
+                        })
+                    }
 
                 })
             }
