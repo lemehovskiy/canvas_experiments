@@ -1,6 +1,8 @@
 let canvas_width = 800;
 let canvas_height = 800;
 
+let rhombus_grid = {};
+
 var renderer = PIXI.autoDetectRenderer(canvas_width, canvas_height, {antialias: true});
 document.body.appendChild(renderer.view);
 
@@ -69,21 +71,18 @@ class Rhombus_Grid {
                             direction: 'bottom_right',
                             offset: 0,
                             length: 1,
-                            color: '0x4286f4',
 
                             parts: [
                                 {
                                     direction: 'bottom_right',
                                     offset: 2,
                                     length: 5,
-                                    color: '0x4286f4',
 
                                     parts: [
                                         {
                                             direction: 'bottom_left',
                                             offset: 1,
                                             length: 3,
-                                            color: '0x4286f4',
                                             apply_for_all: true
                                         }
                                     ]
@@ -97,10 +96,13 @@ class Rhombus_Grid {
 
         // console.log(self.figure_parts);
 
+
+        animate();
+
+
         function animate() {
 
-
-            self.figure.parts.forEach(function(part){
+            self.figure.parts.forEach(function (part) {
                 part.draw();
             })
 
@@ -108,19 +110,12 @@ class Rhombus_Grid {
             requestAnimationFrame(animate);
         }
 
-
-        animate();
-
-        TweenMax.to(self.figure.parts[0], 5, {y: '+=200'})
-        TweenMax.to(self.figure.parts[1], 5, {y: '+=200'})
+        // self.figure.parts.forEach(function(part){
+        // TweenMax.staggerTo(self.figure.parts, 1, {y: '+=200'}, 0.1)
+        // })
 
 
-        // self.draw_figure(
-        //     {
-        //         figure_obj: figure_1,
-        //         // background_img: '../imgs/panda.png'
-        //     }
-        // );
+        // self.draw_figure();
 
 
     }
@@ -129,7 +124,7 @@ class Rhombus_Grid {
 
         let self = this;
 
-        let generated_figure = {
+        let figures_arr = {
             parts: []
         };
 
@@ -142,7 +137,7 @@ class Rhombus_Grid {
             // console.log(figure.init_position_x);
             //init rhombus
 
-            generated_figure.parts.push(
+            figures_arr.parts.push(
                 self.create_rhombus({
                     x: figure.init_position_x,
                     y: figure.init_position_y,
@@ -151,19 +146,23 @@ class Rhombus_Grid {
             );
 
 
+            //draw init parts
             figure.parts.forEach(function (part) {
-                draw_ray({
+                draw_parts({
                     part: part,
+                    color: figure.color,
                     offset_x: offset_x,
                     offset_y: offset_y
                 });
             })
 
 
+
+
         })
 
 
-        function draw_ray(settings) {
+        function draw_parts(settings) {
 
             let i = 1;
 
@@ -235,11 +234,11 @@ class Rhombus_Grid {
 
                 // console.log(generated_figure);
 
-                generated_figure.parts.push(
+                figures_arr.parts.push(
                     self.create_rhombus({
                         x: offset_x,
                         y: offset_y,
-                        color: settings.part.color
+                        color: settings.color
                     })
                 );
 
@@ -249,10 +248,11 @@ class Rhombus_Grid {
                     settings.part.parts.forEach(function (part) {
 
                         if (part.apply_for_all) {
-                            draw_ray({
+                            draw_parts({
                                 part: part,
                                 offset_x: offset_x,
-                                offset_y: offset_y
+                                offset_y: offset_y,
+                                color: settings.color
                             })
                         }
 
@@ -269,10 +269,11 @@ class Rhombus_Grid {
                 settings.part.parts.forEach(function (part) {
 
                     if (!(part.hasOwnProperty('apply_for_all'))) {
-                        draw_ray({
+                        draw_parts({
                             part: part,
                             offset_x: offset_x,
-                            offset_y: offset_y
+                            offset_y: offset_y,
+                            color: settings.color
                         })
                     }
 
@@ -282,13 +283,13 @@ class Rhombus_Grid {
         }
 
         // add coordinates
-        // generated_figure.coordinates = self.get_figure_position(generated_figure.parts);
+        figures_arr.coordinates = self.get_figure_position(figures_arr.parts);
 
         // add size
-        // generated_figure.size = self.get_figure_size(generated_figure.parts);
+        figures_arr.size = self.get_figure_size(figures_arr.parts);
 
 
-        return generated_figure;
+        return figures_arr;
 
     }
 
@@ -302,12 +303,12 @@ class Rhombus_Grid {
 
         rhombus_figure.forEach(function (rhombus_item) {
 
-            rhombus_item.points.forEach(function (point) {
+            // rhombus_item.points.forEach(function (point) {
 
-                x_arr.push(point.x);
-                y_arr.push(point.y);
+            x_arr.push(rhombus_item.x);
+            y_arr.push(rhombus_item.y);
 
-            });
+            // });
         });
 
         return {
@@ -326,12 +327,9 @@ class Rhombus_Grid {
 
         rhombus_figure.forEach(function (rhombus_item) {
 
-            rhombus_item.points.forEach(function (point) {
+            x_arr.push(rhombus_item.x);
+            y_arr.push(rhombus_item.y);
 
-                x_arr.push(point.x);
-                y_arr.push(point.y);
-
-            });
         });
 
         return {
@@ -339,28 +337,6 @@ class Rhombus_Grid {
             height: Math.max.apply(null, y_arr) - Math.min.apply(null, y_arr)
         }
 
-    }
-
-    set_background_cover(options) {
-
-        let width = options.object_width;
-        let height = options.object_height;
-
-        let ratio_x = options.sprite_width;
-        let ratio_y = options.sprite_height;
-
-
-        if (width / height > ratio_x / ratio_y) {
-            options.sprite.width = width;
-            options.sprite.height = width / ratio_y * ratio_x;
-
-        } else {
-            options.sprite.width = height / ratio_y * ratio_x;
-            options.sprite.height = height;
-        }
-
-        options.sprite.position.x = options.object_x;
-        options.sprite.position.y = options.object_y;
     }
 
 
@@ -374,28 +350,26 @@ class Rhombus_Grid {
 
         stage.addChild(container);
 
-        if (options.background_img) {
-            let sprite = PIXI.Sprite.fromImage(options.background_img);
-            sprite.texture.baseTexture.on('loaded', function () {
-                // console.log(sprite.width, sprite.height);
+        let sprite = PIXI.Sprite.fromImage('../imgs/panda.png');
+        sprite.texture.baseTexture.on('loaded', function () {
+            // console.log(sprite.width, sprite.height);
 
-                self.set_background_cover({
-                    object_x: options.figure_obj.coordinates.x,
-                    object_y: options.figure_obj.coordinates.y,
-                    object_width: options.figure_obj.size.width,
-                    object_height: options.figure_obj.size.height,
-                    sprite: sprite,
-                    sprite_width: sprite.width,
-                    sprite_height: sprite.height
+            // self.set_background_cover({
+            //     object_x: options.figure_obj.coordinates.x,
+            //     object_y: options.figure_obj.coordinates.y,
+            //     object_width: options.figure_obj.size.width,
+            //     object_height: options.figure_obj.size.height,
+            //     sprite: sprite,
+            //     sprite_width: sprite.width,
+            //     sprite_height: sprite.height
+            //
+            // })
+        });
+        // sprite.position.x = 50;
 
-                })
-            });
-            // sprite.position.x = 50;
+        // sprite.width = 100;
 
-            // sprite.width = 100;
-
-            container.addChild(sprite);
-        }
+        container.addChild(sprite);
 
         // let's create a moving shape
         let figure = new PIXI.Graphics();
@@ -408,30 +382,30 @@ class Rhombus_Grid {
 
         // console.log(options);
 
-        options.figure_obj.parts.forEach(function (rhombus_item) {
+        // options.figure_obj.parts.forEach(function (rhombus_item) {
+        //
+        //     figure.beginFill(rhombus_item.color, 1);
+        //
+        //     let counter = 0;
+        //
+        //     rhombus_item.points.forEach(function (point) {
+        //
+        //         if (counter++ == 0) {
+        //             figure.moveTo(point.x, point.y);
+        //         }
+        //
+        //         else {
+        //             figure.lineTo(point.x, point.y);
+        //         }
+        //     });
+        // });
 
-            figure.beginFill(rhombus_item.color, 1);
 
-            let counter = 0;
+        // if (options.background_img) {
+        //     container.mask = figure;
+        // }
 
-            rhombus_item.points.forEach(function (point) {
-
-                if (counter++ == 0) {
-                    figure.moveTo(point.x, point.y);
-                }
-
-                else {
-                    figure.lineTo(point.x, point.y);
-                }
-            });
-        });
-
-
-        if (options.background_img) {
-            container.mask = figure;
-        }
-
-        animate();
+        // animate();
 
 // let's create a moving shape
 
@@ -472,25 +446,105 @@ class Rhombus {
         self.color = options.color;
 
 
-
         self.thing = new PIXI.Graphics();
         stage.addChild(self.thing);
+
+
+
+        //background
+        self.container = new PIXI.Container();
+
+        stage.addChild(self.container);
+
+        let sprite = PIXI.Sprite.fromImage('../imgs/panda.png');
+        sprite.texture.baseTexture.on('loaded', function () {
+
+            self.set_background_cover({
+                object_x: self.x,
+                object_y: self.y,
+                object_width: 1000,
+                object_height: 1000,
+                sprite: sprite,
+                sprite_width: sprite.width,
+                sprite_height: sprite.height
+
+            })
+
+            // console.log(sprite.height);
+        });
+        self.container.addChild(sprite);
+        self.figure = new PIXI.Graphics();
+        stage.addChild(self.figure);
+
+        // rhombus_grid.animate();
+
+        // console.log(self.container);
+    }
+
+    set_background_cover(options) {
+
+        let width = options.object_width;
+        let height = options.object_height;
+
+        let ratio_x = options.sprite_width;
+        let ratio_y = options.sprite_height;
+
+
+        if (width / height > ratio_x / ratio_y) {
+            options.sprite.width = width;
+            options.sprite.height = width / ratio_y * ratio_x;
+
+        } else {
+            options.sprite.width = height / ratio_y * ratio_x;
+            options.sprite.height = height;
+        }
+
+        options.sprite.position.x = options.object_x;
+        options.sprite.position.y = options.object_y;
     }
 
     draw() {
 
         let self = this;
 
-        self.thing.clear();
+        // self.thing.clear();
+        //
+        // self.thing.beginFill(self.color, 1);
+        //
+        //
+        // self.thing.moveTo(self.x, self.y + self.height / 2);
+        //
+        // self.thing.lineTo(self.x + self.width / 2, self.y);
+        // self.thing.lineTo(self.x + self.width, self.y + self.height / 2);
+        // self.thing.lineTo(self.x + self.width / 2, self.y + self.height);
 
-        self.thing.beginFill(self.color, 1);
+        //
+        self.figure.clear();
+
+        self.figure.beginFill(self.color, 1);
+
+        self.figure.moveTo(self.x, self.y + self.height / 2);
+
+        self.figure.lineTo(self.x + self.width / 2, self.y);
+        self.figure.lineTo(self.x + self.width, self.y + self.height / 2);
+        self.figure.lineTo(self.x + self.width / 2, self.y + self.height);
+
+        self.figure.closePath();
+
+        self.container.mask = self.figure;
 
 
-        self.thing.moveTo(self.x, self.y + self.height / 2);
-
-        self.thing.lineTo(self.x + self.width / 2, self.y);
-        self.thing.lineTo(self.x + self.width, self.y + self.height / 2);
-        self.thing.lineTo(self.x + self.width / 2, self.y + self.height);
+        // self.figure.clear();
+        //
+        // self.figure.moveTo(0, 0);
+        //
+        // self.figure.lineTo(0, 800);
+        // self.figure.lineTo(800, 800);
+        // self.figure.lineTo(0, 800);
+        //
+        // self.figure.closePath();
+        //
+        // // self.container.mask = self.figure;
 
 
     }
@@ -498,4 +552,4 @@ class Rhombus {
 }
 
 
-let rhombus_grid = new Rhombus_Grid();
+rhombus_grid = new Rhombus_Grid();
