@@ -11,12 +11,6 @@ var stage = new PIXI.Container();
 // container.mask = thing1;
 
 
-function animate() {
-
-    renderer.render(stage);
-    requestAnimationFrame(animate);
-}
-
 //////////////////////////////////////////////////
 
 
@@ -63,7 +57,7 @@ class Rhombus_Grid {
         // console.log(self.init_rhombus_position_x);
         // self.draw_grid();
 
-        let figure_1 = self.get_figure({
+        self.figure = self.get_figure({
             figures: [
                 {
                     init_position_x: self.init_rhombus_position_x,
@@ -101,12 +95,32 @@ class Rhombus_Grid {
             ]
         });
 
-        self.draw_figure(
-            {
-                figure_obj: figure_1,
-                background_img: '../imgs/panda.png'
-            }
-        );
+        // console.log(self.figure_parts);
+
+        function animate() {
+
+
+            self.figure.parts.forEach(function(part){
+                part.draw();
+            })
+
+            renderer.render(stage);
+            requestAnimationFrame(animate);
+        }
+
+
+        animate();
+
+        TweenMax.to(self.figure.parts[0], 5, {y: '+=200'})
+        TweenMax.to(self.figure.parts[1], 5, {y: '+=200'})
+
+
+        // self.draw_figure(
+        //     {
+        //         figure_obj: figure_1,
+        //         // background_img: '../imgs/panda.png'
+        //     }
+        // );
 
 
     }
@@ -268,10 +282,10 @@ class Rhombus_Grid {
         }
 
         // add coordinates
-        generated_figure.coordinates = self.get_figure_position(generated_figure.parts);
+        // generated_figure.coordinates = self.get_figure_position(generated_figure.parts);
 
         // add size
-        generated_figure.size = self.get_figure_size(generated_figure.parts);
+        // generated_figure.size = self.get_figure_size(generated_figure.parts);
 
 
         return generated_figure;
@@ -458,76 +472,25 @@ class Rhombus {
         self.color = options.color;
 
 
-        self.points = [
-            {
-                x: self.x,
-                y: self.y + self.height / 2
-            },
-            {
-                x: self.x + self.width / 2,
-                y: self.y
-            },
-            {
-                x: self.x + self.width,
-                y: self.y + self.height / 2
-            },
-            {
-                x: self.x + self.width / 2,
-                y: self.y + self.height
-            }
-        ];
-        // self.draw_rhombus();
+
+        self.thing = new PIXI.Graphics();
+        stage.addChild(self.thing);
     }
 
-    draw_rhombus() {
+    draw() {
 
         let self = this;
 
-        // ctx.fillStyle = self.color;
-        // ctx.beginPath();
-        // ctx.moveTo(self.init_coordinate[0].x, self.init_coordinate[0].y);
-        //
-        // self.coordinate_arr.forEach(function(coordinate){
-        //     ctx.lineTo(coordinate.x, coordinate.y);
-        // });
-        //
-        //
-        // ctx.closePath();
-        // ctx.fill();
-        // ctx.strokeStyle = self.color;
-        // ctx.stroke();
+        self.thing.clear();
+
+        self.thing.beginFill(self.color, 1);
 
 
-        // let's create a moving shape
-        var thing = new PIXI.Graphics();
-        stage.addChild(thing);
+        self.thing.moveTo(self.x, self.y + self.height / 2);
 
-        // console.log(thing);
-
-
-        thing.clear();
-
-        thing.beginFill(self.color, 1);
-
-
-        let counter = 0;
-
-
-        self.points.forEach(function (coordinate) {
-
-            if (counter++ == 0) {
-                thing.moveTo(self.points[0].x, self.points[0].y);
-            }
-
-            else {
-                thing.lineTo(coordinate.x, coordinate.y);
-            }
-        });
-
-        // container.mask = thing;
-
-
-        // renderer.render(stage);
+        self.thing.lineTo(self.x + self.width / 2, self.y);
+        self.thing.lineTo(self.x + self.width, self.y + self.height / 2);
+        self.thing.lineTo(self.x + self.width / 2, self.y + self.height);
 
 
     }
