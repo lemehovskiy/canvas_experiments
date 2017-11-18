@@ -65,6 +65,7 @@ class Rhombus_Grid {
                     init_position_x: self.init_rhombus_position_x,
                     init_position_y: self.init_rhombus_position_y,
                     color: '0x4286f4',
+                    background_image: '../imgs/panda.png',
 
                     parts: [
                         {
@@ -100,18 +101,27 @@ class Rhombus_Grid {
         animate();
 
 
+        console.log(self.figure);
+
         function animate() {
 
-            self.figure.parts.forEach(function (part) {
-                part.draw();
+            self.figure.forEach(function (figure) {
+                figure.parts.forEach(function(part){
+                    part.draw();
+                })
             })
 
             renderer.render(stage);
             requestAnimationFrame(animate);
         }
 
+
+        self.figure.forEach(function (figure) {
+            TweenMax.staggerTo(figure.parts, 1, {y: '+=200'}, 0.1)
+        })
+
         // self.figure.parts.forEach(function(part){
-        // TweenMax.staggerTo(self.figure.parts, 1, {y: '+=200'}, 0.1)
+        //     TweenMax.staggerTo(self.figure.parts, 1, {y: '+=200'}, 0.1)
         // })
 
 
@@ -124,12 +134,14 @@ class Rhombus_Grid {
 
         let self = this;
 
-        let figures_arr = {
-            parts: []
-        };
+        let generated_figures_arr = [];
 
 
         options.figures.forEach(function (figure) {
+
+            let generated_figure = {
+                parts: []
+            };
 
             let offset_x = figure.init_position_x;
             let offset_y = figure.init_position_y;
@@ -137,11 +149,12 @@ class Rhombus_Grid {
             // console.log(figure.init_position_x);
             //init rhombus
 
-            figures_arr.parts.push(
+            generated_figure.parts.push(
                 self.create_rhombus({
                     x: figure.init_position_x,
                     y: figure.init_position_y,
-                    color: figure.color
+                    color: figure.color,
+                    background_image: figure.background_image
                 })
             );
 
@@ -152,12 +165,30 @@ class Rhombus_Grid {
                     part: part,
                     color: figure.color,
                     offset_x: offset_x,
-                    offset_y: offset_y
+                    offset_y: offset_y,
+                    generated_figure: generated_figure,
+                    background_image: figure.background_image
                 });
             })
 
 
+            // add coordinates
+            generated_figure.coordinates = self.get_figure_position(generated_figure.parts);
 
+            // add size
+            generated_figure.size = self.get_figure_size(generated_figure.parts);
+
+            // add background image
+            // generated_figure.background_image = figure.background_image;
+
+
+            generated_figure.parts.forEach(function(part){
+                part.figure_coordinates = generated_figure.coordinates;
+                part.figure_size = generated_figure.size;
+            })
+
+
+            generated_figures_arr.push(generated_figure);
 
         })
 
@@ -234,11 +265,13 @@ class Rhombus_Grid {
 
                 // console.log(generated_figure);
 
-                figures_arr.parts.push(
+
+                settings.generated_figure.parts.push(
                     self.create_rhombus({
                         x: offset_x,
                         y: offset_y,
-                        color: settings.color
+                        color: settings.color,
+                        background_image: settings.background_image
                     })
                 );
 
@@ -252,7 +285,9 @@ class Rhombus_Grid {
                                 part: part,
                                 offset_x: offset_x,
                                 offset_y: offset_y,
-                                color: settings.color
+                                color: settings.color,
+                                generated_figure: settings.generated_figure,
+                                background_image: settings.background_image
                             })
                         }
 
@@ -273,7 +308,9 @@ class Rhombus_Grid {
                             part: part,
                             offset_x: offset_x,
                             offset_y: offset_y,
-                            color: settings.color
+                            color: settings.color,
+                            generated_figure: settings.generated_figure,
+                            background_image: settings.background_image
                         })
                     }
 
@@ -282,14 +319,8 @@ class Rhombus_Grid {
 
         }
 
-        // add coordinates
-        figures_arr.coordinates = self.get_figure_position(figures_arr.parts);
 
-        // add size
-        figures_arr.size = self.get_figure_size(figures_arr.parts);
-
-
-        return figures_arr;
+        return generated_figures_arr;
 
     }
 
@@ -415,6 +446,8 @@ class Rhombus_Grid {
 
     create_rhombus(options) {
 
+        // console.log(options);
+
         // console.log('create_thumbus');
 
 
@@ -426,6 +459,7 @@ class Rhombus_Grid {
             width: self.rhombus_width,
             height: self.rhombus_height,
             color: options.color,
+            background_image: options.background_image
             // color: '#' + Math.floor(Math.random() * 16777215).toString(16),
         });
 
@@ -437,6 +471,9 @@ class Rhombus_Grid {
 
 class Rhombus {
     constructor(options) {
+
+        // console.log(options);
+
         let self = this;
 
         self.x = options.x;
@@ -444,6 +481,7 @@ class Rhombus {
         self.width = options.width;
         self.height = options.height;
         self.color = options.color;
+        self.background_image = options.background_image;
 
 
         self.thing = new PIXI.Graphics();
@@ -456,14 +494,14 @@ class Rhombus {
 
         stage.addChild(self.container);
 
-        let sprite = PIXI.Sprite.fromImage('../imgs/panda.png');
+        let sprite = PIXI.Sprite.fromImage(options.background_image);
         sprite.texture.baseTexture.on('loaded', function () {
 
             self.set_background_cover({
-                object_x: self.x,
-                object_y: self.y,
-                object_width: 1000,
-                object_height: 1000,
+                object_x: self.x - (self.x - self.figure_coordinates.x),
+                object_y: self.y - (self.y - self.figure_coordinates.y),
+                object_width: self.figure_size.width,
+                object_height: self.figure_size.height,
                 sprite: sprite,
                 sprite_width: sprite.width,
                 sprite_height: sprite.height
