@@ -1,5 +1,5 @@
 let canvas_width = 800;
-let canvas_height = 800;
+let canvas_height = 1200;
 
 let rhombus_grid = {};
 
@@ -61,32 +61,67 @@ class Rhombus_Grid {
 
         self.rhombus_background = self.get_rhombus_background({
             figures: [
+
                 {
                     init_position_x: self.init_rhombus_position_x,
                     init_position_y: self.init_rhombus_position_y,
                     color: '0x4286f4',
                     background_image: '../imgs/panda.png',
+                    draw_init_rhombus: false,
+
+
+                    parts: [
+                        {
+                            direction: 'bottom',
+                            offset: 8,
+                            length: 4,
+
+                            parts: [
+                                {
+                                    direction: 'bottom_left',
+                                    offset: 0,
+                                    length: -1,
+                                    apply_for_all: true
+
+                                },
+                                {
+                                    direction: 'top_right',
+                                    offset: 0,
+                                    length: -1,
+                                    apply_for_all: true
+
+                                }
+                            ]
+                        }
+                    ]
+                },
+
+                {
+                    init_position_x: self.init_rhombus_position_x,
+                    init_position_y: self.init_rhombus_position_y,
+                    color: '0x4286f4',
+                    background_image: '../imgs/panda.png',
+                    draw_init_rhombus: false,
+
 
                     parts: [
                         {
                             direction: 'bottom_right',
-                            offset: 0,
+                            offset: 4,
                             length: 1,
 
                             parts: [
                                 {
-                                    direction: 'bottom_right',
-                                    offset: 2,
-                                    length: 5,
+                                    direction: 'bottom_left',
+                                    offset: 0,
+                                    length: 2,
 
-                                    parts: [
-                                        {
-                                            direction: 'bottom_left',
-                                            offset: 1,
-                                            length: 3,
-                                            apply_for_all: true
-                                        }
-                                    ]
+                                },
+                                {
+                                    direction: 'top_right',
+                                    offset: 0,
+                                    length: 2,
+
                                 }
                             ]
                         }
@@ -94,25 +129,42 @@ class Rhombus_Grid {
                 },
                 {
                     init_position_x: self.init_rhombus_position_x,
-                    init_position_y: self.init_rhombus_position_y + self.grid_step_size_y * 2,
+                    init_position_y: self.init_rhombus_position_y,
                     color: '0x4286f4',
+                    draw_init_rhombus: false,
+
 
                     parts: [
                         {
-                            direction: 'bottom_left',
-                            offset: 0,
+                            direction: 'bottom_right',
+                            offset: 5,
                             length: 1,
 
                             parts: [
                                 {
-                                    direction: 'bottom_right',
+                                    direction: 'bottom_left',
                                     offset: 0,
-                                    length: 2
+                                    length: 2,
+
+                                },
+                                {
+                                    direction: 'top_right',
+                                    offset: 0,
+                                    length: 2,
+
                                 }
                             ]
                         }
                     ]
+                },
+
+                {
+                    init_position_x: self.init_rhombus_position_x,
+                    init_position_y: self.init_rhombus_position_y,
+                    color: '0x4286f4',
+                    draw_init_rhombus: true
                 }
+
             ]
         });
 
@@ -126,10 +178,13 @@ class Rhombus_Grid {
             figure.parts.forEach(function (rhombus) {
 
                 TweenMax.to(rhombus, 0, {y: rhombus.init_y + 100})
+                TweenMax.to(rhombus.figure, 0, {alpha: 0})
+                TweenMax.to(rhombus.container, 0, {alpha: 0})
                 self.all_rhombus.push(rhombus);
             });
         })
 
+        console.log(self.all_rhombus);
 
         let wave = {
             y: 0
@@ -138,8 +193,6 @@ class Rhombus_Grid {
 
         animate();
 
-
-        console.log(self.rhombus_background);
 
 
         function animate() {
@@ -159,7 +212,10 @@ class Rhombus_Grid {
                 if (wave.y > rhombus.init_y) {
                     // tl.set(rhombus, {y: init_y + 100});
                     tl.to(rhombus.container, .5, {alpha: 1});
+                    tl.to(rhombus.figure, .5, {alpha: 1}, '-=0.5');
                     tl.to(rhombus, .5, {y: init_y}, '-=0.5');
+
+                    self.all_rhombus.splice(index, 1)
                 }
             });
 
@@ -192,27 +248,32 @@ class Rhombus_Grid {
             // console.log(figure.init_position_x);
             //init rhombus
 
-            generated_figure.parts.push(
-                self.create_rhombus({
-                    x: figure.init_position_x,
-                    y: figure.init_position_y,
-                    color: figure.color,
-                    background_image: figure.background_image
-                })
-            );
+            if (figure.draw_init_rhombus) {
+                generated_figure.parts.push(
+                    self.create_rhombus({
+                        x: offset_x,
+                        y: offset_y,
+                        color: figure.color,
+                        background_image: figure.background_image
+                    })
+                );
+            }
 
 
             //draw init parts
-            figure.parts.forEach(function (part) {
-                draw_parts({
-                    part: part,
-                    color: figure.color,
-                    offset_x: offset_x,
-                    offset_y: offset_y,
-                    generated_figure: generated_figure,
-                    background_image: figure.background_image
-                });
-            })
+
+            if (figure.parts) {
+                figure.parts.forEach(function (part) {
+                    draw_parts({
+                        part: part,
+                        color: figure.color,
+                        offset_x: offset_x,
+                        offset_y: offset_y,
+                        generated_figure: generated_figure,
+                        background_image: figure.background_image
+                    });
+                })
+            }
 
 
             // add coordinates
@@ -267,6 +328,22 @@ class Rhombus_Grid {
                         offset_x = offset_x + self.grid_step_size_x * settings.part.offset;
                         offset_y = offset_y + self.grid_step_size_y * settings.part.offset;
                         break;
+
+                    case 'top':
+                        offset_y = offset_y - (self.grid_step_size_y * 2) * settings.part.offset;
+                        break;
+
+                    case 'bottom':
+                        offset_y = offset_y + (self.grid_step_size_y * 2) * settings.part.offset;
+                        break;
+
+                    case 'left':
+                        offset_x = offset_x - (self.grid_step_size_x * 2) * settings.part.offset;
+                        break;
+
+                    case 'right':
+                        offset_x = offset_x + (self.grid_step_size_x * 2) * settings.part.offset;
+                        break;
                 }
             }
 
@@ -295,12 +372,28 @@ class Rhombus_Grid {
                         offset_x = offset_x + self.grid_step_size_x;
                         offset_y = offset_y + self.grid_step_size_y;
                         break;
+
+                    case 'top':
+                        offset_y = offset_y - self.grid_step_size_y * 2;
+                        break;
+
+                    case 'bottom':
+                        offset_y = offset_y + self.grid_step_size_y * 2;
+                        break;
+
+                    case 'left':
+                        offset_x = offset_x - self.grid_step_size_x * 2;
+                        break;
+
+                    case 'right':
+                        offset_x = offset_x + self.grid_step_size_x * 2;
+                        break;
                 }
 
                 i++;
 
                 if (settings.part.length == -1) {
-                    draw_statement = offset_x > 0 && offset_x < canvas_width;
+                    draw_statement = offset_x > -self.grid_step_size_x && offset_x < canvas_width;
                 }
                 else {
                     draw_statement = (i <= settings.part.length);
@@ -543,8 +636,8 @@ class Rhombus {
             self.sprite.texture.baseTexture.on('loaded', function () {
 
                 // self.set_background_cover({
-                //     object_x: self.x - (self.x - self.figure_coordinates.x),
-                //     object_y: self.y - (self.y - self.figure_coordinates.y),
+                //     object_x: self.x - (self.init_x - self.figure_coordinates.x),
+                //     object_y: self.y - (self.init_y - self.figure_coordinates.y),
                 //     object_width: self.figure_size.width,
                 //     object_height: self.figure_size.height,
                 //     sprite: self.sprite,
@@ -558,7 +651,7 @@ class Rhombus {
         }
 
         self.figure = new PIXI.Graphics();
-        self.container.alpha = 0;
+        // self.container.alpha = 0;
         stage.addChild(self.figure);
 
     }
