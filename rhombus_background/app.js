@@ -59,7 +59,7 @@ class Rhombus_Grid {
         // console.log(self.init_rhombus_position_x);
         // self.draw_grid();
 
-        self.figure = self.get_figure({
+        self.rhombus_background = self.get_rhombus_background({
             figures: [
                 {
                     init_position_x: self.init_rhombus_position_x,
@@ -101,11 +101,11 @@ class Rhombus_Grid {
         animate();
 
 
-        console.log(self.figure);
+        console.log(self.rhombus_background);
 
         function animate() {
 
-            self.figure.forEach(function (figure) {
+            self.rhombus_background.forEach(function (figure) {
                 figure.parts.forEach(function(part){
                     part.draw();
                 })
@@ -116,21 +116,18 @@ class Rhombus_Grid {
         }
 
 
-        self.figure.forEach(function (figure) {
-            TweenMax.staggerTo(figure.parts, 1, {y: '+=200'}, 0.1)
+        self.rhombus_background.forEach(function (figure) {
+
+            figure.parts.forEach(function (rhombus) {
+
+                TweenMax.to(rhombus.container, 1, {alpha: 1})
+            });
         })
-
-        // self.figure.parts.forEach(function(part){
-        //     TweenMax.staggerTo(self.figure.parts, 1, {y: '+=200'}, 0.1)
-        // })
-
-
-        // self.draw_figure();
 
 
     }
 
-    get_figure(options) {
+    get_rhombus_background(options) {
 
         let self = this;
 
@@ -483,9 +480,12 @@ class Rhombus {
         self.color = options.color;
         self.background_image = options.background_image;
 
+        self.init_x = self.x;
+        self.init_y = self.y;
 
-        self.thing = new PIXI.Graphics();
-        stage.addChild(self.thing);
+
+        // self.thing = new PIXI.Graphics();
+        // stage.addChild(self.thing);
 
 
 
@@ -494,25 +494,31 @@ class Rhombus {
 
         stage.addChild(self.container);
 
-        let sprite = PIXI.Sprite.fromImage(options.background_image);
-        sprite.texture.baseTexture.on('loaded', function () {
+        self.sprite = PIXI.Sprite.fromImage(options.background_image);
+        self.sprite.texture.baseTexture.on('loaded', function () {
 
-            self.set_background_cover({
-                object_x: self.x - (self.x - self.figure_coordinates.x),
-                object_y: self.y - (self.y - self.figure_coordinates.y),
-                object_width: self.figure_size.width,
-                object_height: self.figure_size.height,
-                sprite: sprite,
-                sprite_width: sprite.width,
-                sprite_height: sprite.height
+            // self.set_background_cover({
+            //     object_x: self.x - (self.x - self.figure_coordinates.x),
+            //     object_y: self.y - (self.y - self.figure_coordinates.y),
+            //     object_width: self.figure_size.width,
+            //     object_height: self.figure_size.height,
+            //     sprite: self.sprite,
+            //     sprite_width: self.sprite.width,
+            //     sprite_height: self.sprite.height
+            //
+            // })
 
-            })
-
-            // console.log(sprite.height);
         });
-        self.container.addChild(sprite);
+        self.container.addChild(self.sprite);
         self.figure = new PIXI.Graphics();
+
+        self.container.alpha = 0;
+        // console.log(self.figure);
+
         stage.addChild(self.figure);
+
+
+
 
         // rhombus_grid.animate();
 
@@ -545,16 +551,16 @@ class Rhombus {
 
         let self = this;
 
-        // self.thing.clear();
-        //
-        // self.thing.beginFill(self.color, 1);
-        //
-        //
-        // self.thing.moveTo(self.x, self.y + self.height / 2);
-        //
-        // self.thing.lineTo(self.x + self.width / 2, self.y);
-        // self.thing.lineTo(self.x + self.width, self.y + self.height / 2);
-        // self.thing.lineTo(self.x + self.width / 2, self.y + self.height);
+        self.set_background_cover({
+            object_x: self.x - (self.init_x - self.figure_coordinates.x),
+            object_y: self.y - (self.init_y - self.figure_coordinates.y),
+            object_width: self.figure_size.width,
+            object_height: self.figure_size.height,
+            sprite: self.sprite,
+            sprite_width: self.sprite.width,
+            sprite_height: self.sprite.height
+
+        })
 
         //
         self.figure.clear();
@@ -567,22 +573,8 @@ class Rhombus {
         self.figure.lineTo(self.x + self.width, self.y + self.height / 2);
         self.figure.lineTo(self.x + self.width / 2, self.y + self.height);
 
-        self.figure.closePath();
 
         self.container.mask = self.figure;
-
-
-        // self.figure.clear();
-        //
-        // self.figure.moveTo(0, 0);
-        //
-        // self.figure.lineTo(0, 800);
-        // self.figure.lineTo(800, 800);
-        // self.figure.lineTo(0, 800);
-        //
-        // self.figure.closePath();
-        //
-        // // self.container.mask = self.figure;
 
 
     }
