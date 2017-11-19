@@ -94,7 +94,7 @@ class Rhombus_Grid {
                 },
                 {
                     init_position_x: self.init_rhombus_position_x,
-                    init_position_y: self.init_rhombus_position_y,
+                    init_position_y: self.init_rhombus_position_y + self.grid_step_size_y * 2,
                     color: '0x4286f4',
 
                     parts: [
@@ -106,17 +106,8 @@ class Rhombus_Grid {
                             parts: [
                                 {
                                     direction: 'bottom_right',
-                                    offset: 2,
-                                    length: 5,
-
-                                    parts: [
-                                        {
-                                            direction: 'bottom_left',
-                                            offset: 1,
-                                            length: 3,
-                                            apply_for_all: true
-                                        }
-                                    ]
+                                    offset: 0,
+                                    length: 2
                                 }
                             ]
                         }
@@ -622,8 +613,9 @@ class Rhombus {
         self.figure.lineTo(self.x + self.width, self.y + self.height / 2);
         self.figure.lineTo(self.x + self.width / 2, self.y + self.height);
 
-
-        self.container.mask = self.figure;
+        if (self.background_image != undefined) {
+            self.container.mask = self.figure;
+        }
 
 
     }
