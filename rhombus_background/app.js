@@ -91,6 +91,36 @@ class Rhombus_Grid {
                             ]
                         }
                     ]
+                },
+                {
+                    init_position_x: self.init_rhombus_position_x,
+                    init_position_y: self.init_rhombus_position_y,
+                    color: '0x4286f4',
+
+                    parts: [
+                        {
+                            direction: 'bottom_left',
+                            offset: 0,
+                            length: 1,
+
+                            parts: [
+                                {
+                                    direction: 'bottom_right',
+                                    offset: 2,
+                                    length: 5,
+
+                                    parts: [
+                                        {
+                                            direction: 'bottom_left',
+                                            offset: 1,
+                                            length: 3,
+                                            apply_for_all: true
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         });
@@ -98,31 +128,56 @@ class Rhombus_Grid {
         // console.log(self.figure_parts);
 
 
+        self.all_rhombus = [];
+
+        self.rhombus_background.forEach(function (figure) {
+
+            figure.parts.forEach(function (rhombus) {
+
+                TweenMax.to(rhombus, 0, {y: rhombus.init_y + 100})
+                self.all_rhombus.push(rhombus);
+            });
+        })
+
+
+        let wave = {
+            y: 0
+        }
+
+
         animate();
 
 
         console.log(self.rhombus_background);
 
+
         function animate() {
 
             self.rhombus_background.forEach(function (figure) {
-                figure.parts.forEach(function(part){
+                figure.parts.forEach(function (part) {
                     part.draw();
                 })
             })
+
+            self.all_rhombus.forEach(function (rhombus, index) {
+
+                let init_y = rhombus.init_y;
+
+                let tl = new TimelineMax();
+
+                if (wave.y > rhombus.init_y) {
+                    // tl.set(rhombus, {y: init_y + 100});
+                    tl.to(rhombus.container, .5, {alpha: 1});
+                    tl.to(rhombus, .5, {y: init_y}, '-=0.5');
+                }
+            });
 
             renderer.render(stage);
             requestAnimationFrame(animate);
         }
 
 
-        self.rhombus_background.forEach(function (figure) {
-
-            figure.parts.forEach(function (rhombus) {
-
-                TweenMax.to(rhombus.container, 1, {alpha: 1})
-            });
-        })
+        TweenMax.to(wave, 3, {y: canvas_height})
 
 
     }
@@ -179,7 +234,7 @@ class Rhombus_Grid {
             // generated_figure.background_image = figure.background_image;
 
 
-            generated_figure.parts.forEach(function(part){
+            generated_figure.parts.forEach(function (part) {
                 part.figure_coordinates = generated_figure.coordinates;
                 part.figure_size = generated_figure.size;
             })
@@ -443,14 +498,9 @@ class Rhombus_Grid {
 
     create_rhombus(options) {
 
-        // console.log(options);
-
-        // console.log('create_thumbus');
-
-
         let self = this;
 
-        let rhombus = new Rhombus({
+        let args = {
             x: options.x,
             y: options.y,
             width: self.rhombus_width,
@@ -458,7 +508,10 @@ class Rhombus_Grid {
             color: options.color,
             background_image: options.background_image
             // color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-        });
+        };
+
+
+        let rhombus = new Rhombus(args);
 
         // console.log(rhombus);
 
@@ -487,42 +540,36 @@ class Rhombus {
         // self.thing = new PIXI.Graphics();
         // stage.addChild(self.thing);
 
+        self.container = new PIXI.Container();
+        stage.addChild(self.container);
 
 
         //background
-        self.container = new PIXI.Container();
 
-        stage.addChild(self.container);
+        if (self.background_image != undefined) {
 
-        self.sprite = PIXI.Sprite.fromImage(options.background_image);
-        self.sprite.texture.baseTexture.on('loaded', function () {
+            self.sprite = PIXI.Sprite.fromImage(options.background_image);
+            self.sprite.texture.baseTexture.on('loaded', function () {
 
-            // self.set_background_cover({
-            //     object_x: self.x - (self.x - self.figure_coordinates.x),
-            //     object_y: self.y - (self.y - self.figure_coordinates.y),
-            //     object_width: self.figure_size.width,
-            //     object_height: self.figure_size.height,
-            //     sprite: self.sprite,
-            //     sprite_width: self.sprite.width,
-            //     sprite_height: self.sprite.height
-            //
-            // })
+                // self.set_background_cover({
+                //     object_x: self.x - (self.x - self.figure_coordinates.x),
+                //     object_y: self.y - (self.y - self.figure_coordinates.y),
+                //     object_width: self.figure_size.width,
+                //     object_height: self.figure_size.height,
+                //     sprite: self.sprite,
+                //     sprite_width: self.sprite.width,
+                //     sprite_height: self.sprite.height
+                //
+                // })
 
-        });
-        self.container.addChild(self.sprite);
+            });
+            self.container.addChild(self.sprite);
+        }
+
         self.figure = new PIXI.Graphics();
-
         self.container.alpha = 0;
-        // console.log(self.figure);
-
         stage.addChild(self.figure);
 
-
-
-
-        // rhombus_grid.animate();
-
-        // console.log(self.container);
     }
 
     set_background_cover(options) {
@@ -551,16 +598,18 @@ class Rhombus {
 
         let self = this;
 
-        self.set_background_cover({
-            object_x: self.x - (self.init_x - self.figure_coordinates.x),
-            object_y: self.y - (self.init_y - self.figure_coordinates.y),
-            object_width: self.figure_size.width,
-            object_height: self.figure_size.height,
-            sprite: self.sprite,
-            sprite_width: self.sprite.width,
-            sprite_height: self.sprite.height
+        if (self.background_image != undefined) {
+            self.set_background_cover({
+                object_x: self.x - (self.init_x - self.figure_coordinates.x),
+                object_y: self.y - (self.init_y - self.figure_coordinates.y),
+                object_width: self.figure_size.width,
+                object_height: self.figure_size.height,
+                sprite: self.sprite,
+                sprite_width: self.sprite.width,
+                sprite_height: self.sprite.height
 
-        })
+            })
+        }
 
         //
         self.figure.clear();
