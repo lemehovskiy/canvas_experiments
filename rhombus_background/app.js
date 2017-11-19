@@ -9,25 +9,6 @@ document.body.appendChild(renderer.view);
 // create the root of the scene graph
 var stage = new PIXI.Container();
 
-// container.mask = thing;
-// container.mask = thing1;
-
-
-//////////////////////////////////////////////////
-
-
-// let canvas = document.createElement("canvas"),
-//     ctx = canvas.getContext("2d");
-//
-//
-// canvas.width = 800;
-// canvas.height = 600;
-//
-// document.body.appendChild(canvas);
-//
-// ctx.fillStyle = "black";
-// ctx.fillRect(0, 0, canvas.width, canvas.height);
-
 
 class Rhombus_Grid {
 
@@ -49,15 +30,9 @@ class Rhombus_Grid {
 
         self.container_padding = 60;
 
-        // self.init_rhombus_position_x_points = 0;
-        // self.init_rhombus_position_y_points = 0;
-
         self.init_rhombus_position_x = self.container_offset_left + self.container_padding;
         self.init_rhombus_position_y = -self.rhombus_height / 2;
 
-
-        // console.log(self.init_rhombus_position_x);
-        // self.draw_grid();
 
         self.rhombus_background = self.get_rhombus_background({
             figures: [
@@ -114,7 +89,7 @@ class Rhombus_Grid {
                                 {
                                     direction: 'bottom_left',
                                     offset: 0,
-                                    length: 2,
+                                    length: 3,
 
                                 },
                                 {
@@ -144,7 +119,7 @@ class Rhombus_Grid {
                                 {
                                     direction: 'bottom_left',
                                     offset: 0,
-                                    length: 2,
+                                    length: 3,
 
                                 },
                                 {
@@ -245,9 +220,8 @@ class Rhombus_Grid {
             let offset_x = figure.init_position_x;
             let offset_y = figure.init_position_y;
 
-            // console.log(figure.init_position_x);
-            //init rhombus
 
+            //init rhombus
             if (figure.draw_init_rhombus) {
                 generated_figure.parts.push(
                     self.create_rhombus({
@@ -261,7 +235,6 @@ class Rhombus_Grid {
 
 
             //draw init parts
-
             if (figure.parts) {
                 figure.parts.forEach(function (part) {
                     draw_parts({
@@ -281,9 +254,6 @@ class Rhombus_Grid {
 
             // add size
             generated_figure.size = self.get_figure_size(generated_figure.parts);
-
-            // add background image
-            // generated_figure.background_image = figure.background_image;
 
 
             generated_figure.parts.forEach(function (part) {
@@ -399,8 +369,6 @@ class Rhombus_Grid {
                     draw_statement = (i <= settings.part.length);
                 }
 
-                // console.log(generated_figure);
-
 
                 settings.generated_figure.parts.push(
                     self.create_rhombus({
@@ -463,14 +431,10 @@ class Rhombus_Grid {
 
     get_figure_position(rhombus_figure) {
 
-        let self = this;
-
         let x_arr = [];
         let y_arr = [];
 
         rhombus_figure.forEach(function (rhombus_item) {
-
-            // rhombus_item.points.forEach(function (point) {
 
             x_arr.push(rhombus_item.x);
             y_arr.push(rhombus_item.y);
@@ -486,8 +450,6 @@ class Rhombus_Grid {
     }
 
     get_figure_size(rhombus_figure) {
-
-        let self = this;
 
         let x_arr = [];
         let y_arr = [];
@@ -507,79 +469,6 @@ class Rhombus_Grid {
     }
 
 
-    draw_figure(options) {
-
-        console.log(options);
-
-        let self = this;
-
-        let container = new PIXI.Container();
-
-        stage.addChild(container);
-
-        let sprite = PIXI.Sprite.fromImage('../imgs/panda.png');
-        sprite.texture.baseTexture.on('loaded', function () {
-            // console.log(sprite.width, sprite.height);
-
-            // self.set_background_cover({
-            //     object_x: options.figure_obj.coordinates.x,
-            //     object_y: options.figure_obj.coordinates.y,
-            //     object_width: options.figure_obj.size.width,
-            //     object_height: options.figure_obj.size.height,
-            //     sprite: sprite,
-            //     sprite_width: sprite.width,
-            //     sprite_height: sprite.height
-            //
-            // })
-        });
-        // sprite.position.x = 50;
-
-        // sprite.width = 100;
-
-        container.addChild(sprite);
-
-        // let's create a moving shape
-        let figure = new PIXI.Graphics();
-        stage.addChild(figure);
-
-        // console.log(self.get_figure_position(rhombus_figure));
-
-
-        figure.clear();
-
-        // console.log(options);
-
-        // options.figure_obj.parts.forEach(function (rhombus_item) {
-        //
-        //     figure.beginFill(rhombus_item.color, 1);
-        //
-        //     let counter = 0;
-        //
-        //     rhombus_item.points.forEach(function (point) {
-        //
-        //         if (counter++ == 0) {
-        //             figure.moveTo(point.x, point.y);
-        //         }
-        //
-        //         else {
-        //             figure.lineTo(point.x, point.y);
-        //         }
-        //     });
-        // });
-
-
-        // if (options.background_img) {
-        //     container.mask = figure;
-        // }
-
-        // animate();
-
-// let's create a moving shape
-
-
-    }
-
-
     create_rhombus(options) {
 
         let self = this;
@@ -591,13 +480,10 @@ class Rhombus_Grid {
             height: self.rhombus_height,
             color: options.color,
             background_image: options.background_image
-            // color: '#' + Math.floor(Math.random() * 16777215).toString(16),
         };
 
 
         let rhombus = new Rhombus(args);
-
-        // console.log(rhombus);
 
         return rhombus;
     }
@@ -605,8 +491,6 @@ class Rhombus_Grid {
 
 class Rhombus {
     constructor(options) {
-
-        // console.log(options);
 
         let self = this;
 
