@@ -31,7 +31,16 @@ class Rhombus_Grid {
         self.grid_step_size_x = self.rhombus_width / 2;
         self.grid_step_size_y = self.rhombus_height / 2;
 
+        self.container_max_width = 1000;
+
         self.container_width = 1000;
+
+        if (ww < self.container_max_width) {
+            self.container_width = ww;
+        }
+        else {
+            self.container_width = self.container_max_width;
+        }
 
         self.container_offset_left = (renderer.width - self.container_width) / 2;
         self.container_offset_right = (renderer.width - self.container_width) / 2 + self.container_width;
@@ -79,66 +88,67 @@ class Rhombus_Grid {
                 },
 
                 {
-                    background_image: '../imgs/panda.png',
+                    color: '0x4286f4',
+                    // background_image: '../imgs/panda.png',
                     draw_init_rhombus: true,
 
 
-                    // parts: [
-                    //     {
-                    //         direction: 'bottom_right',
-                    //         offset: 1,
-                    //         length: 1,
+                    parts: [
+                        {
+                            direction: 'bottom_right',
+                            offset: 1,
+                            length: 1,
 
-                            // parts: [
-                            //     {
-                            //         direction: 'bottom_left',
-                            //         offset: 0,
-                            //         length: 3,
-                            //
-                            //     },
-                            //     {
-                            //         direction: 'top_right',
-                            //         offset: 0,
-                            //         length: 2,
-                            //
-                            //     }
-                            // ]
-                    //     }
-                    // ]
+                            parts: [
+                                {
+                                    direction: 'bottom_left',
+                                    offset: 0,
+                                    length: 3,
+
+                                },
+                                {
+                                    direction: 'top_right',
+                                    offset: 0,
+                                    length: 2,
+
+                                }
+                            ]
+                        }
+                    ]
                 },
-                // {
-                //     color: '0x4286f4',
-                //     draw_init_rhombus: false,
-                //
-                //
-                //     parts: [
-                //         {
-                //             direction: 'bottom_right',
-                //             offset: 5,
-                //             length: 1,
-                //
-                //             parts: [
-                //                 {
-                //                     direction: 'bottom_left',
-                //                     offset: 0,
-                //                     length: 3,
-                //
-                //                 },
-                //                 {
-                //                     direction: 'top_right',
-                //                     offset: 0,
-                //                     length: -1,
-                //
-                //                 }
-                //             ]
-                //         }
-                //     ]
-                // },
-                //
-                // {
-                //     color: '0x4286f4',
-                //     draw_init_rhombus: true
-                // }
+                {
+                    color: '0x4286f4',
+                    draw_init_rhombus: false,
+
+
+                    parts: [
+                        {
+                            direction: 'bottom_right',
+                            offset: 5,
+                            length: 1,
+
+                            parts: [
+                                {
+                                    direction: 'bottom_left',
+                                    offset: 0,
+                                    length: 3,
+
+                                },
+                                {
+                                    direction: 'top_right',
+                                    offset: 0,
+                                    length: -1,
+
+                                }
+                            ]
+                        }
+                    ]
+                },
+
+                {
+                    color: '0x4286f4',
+                    draw_init_rhombus: true
+                }
 
             ]
         }
@@ -148,7 +158,22 @@ class Rhombus_Grid {
 
         $(window).on('resize', function(){
 
-            self.rhombus_background = [];
+            self.rhombus_background.forEach(function (figure) {
+
+                figure.parts.forEach(function (rhombus) {
+                    TweenMax.to(rhombus.figure, 0, {alpha: 0})
+                    TweenMax.to(rhombus.container, 0, {alpha: 0})
+                });
+            })
+
+
+            if (ww < self.container_max_width) {
+                self.container_width = ww;
+            }
+            else {
+                self.container_width = self.container_max_width;
+            }
+
 
             self.container_offset_left = (renderer.width - self.container_width) / 2;
             self.container_offset_right = (renderer.width - self.container_width) / 2 + self.container_width;
