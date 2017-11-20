@@ -64,8 +64,8 @@ class Rhombus_Grid {
                     parts: [
                         {
                             direction: 'bottom',
-                            offset: 8,
-                            length: 1,
+                            offset: 7,
+                            length: 5,
 
                             parts: [
                                 {
@@ -96,20 +96,22 @@ class Rhombus_Grid {
                     parts: [
                         {
                             direction: 'bottom_right',
-                            offset: 1,
+                            offset: 0,
                             length: 1,
 
                             parts: [
                                 {
                                     direction: 'bottom_left',
                                     offset: 0,
-                                    length: 3,
+                                    length: 2,
+                                    apply_for_all: true
 
                                 },
                                 {
                                     direction: 'top_right',
                                     offset: 0,
                                     length: 2,
+                                    apply_for_all: true
 
                                 }
                             ]
@@ -124,20 +126,22 @@ class Rhombus_Grid {
                     parts: [
                         {
                             direction: 'bottom_right',
-                            offset: 5,
-                            length: 1,
+                            offset: 3,
+                            length: 3,
 
                             parts: [
                                 {
                                     direction: 'bottom_left',
                                     offset: 0,
                                     length: 3,
+                                    apply_for_all: true
 
                                 },
                                 {
                                     direction: 'top_right',
                                     offset: 0,
                                     length: -1,
+                                    apply_for_all: true
 
                                 }
                             ]
