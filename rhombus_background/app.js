@@ -162,13 +162,19 @@ class Rhombus_Grid {
 
         $(window).on('resize', function(){
 
-            self.rhombus_background.forEach(function (figure) {
 
-                figure.parts.forEach(function (rhombus) {
-                    TweenMax.to(rhombus.figure, 0, {alpha: 0})
-                    TweenMax.to(rhombus.container, 0, {alpha: 0})
-                });
-            })
+            stage.destroy(true);
+            // stage = null;
+
+            stage = new PIXI.Container();
+
+            // self.rhombus_background.forEach(function (figure) {
+            //
+            //     figure.parts.forEach(function (rhombus) {
+            //         TweenMax.to(rhombus.figure, 0, {alpha: 0})
+            //         TweenMax.to(rhombus.container, 0, {alpha: 0})
+            //     });
+            // })
 
 
             if (ww < self.container_max_width) {
