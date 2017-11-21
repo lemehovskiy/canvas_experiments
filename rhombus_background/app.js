@@ -7,7 +7,7 @@ document.getElementById("main-container").appendChild(renderer.view);
 
 console.log(renderer);
 
-$(window).on('resize load', function(){
+$(window).on('resize load', function () {
     ww = $(window).outerWidth();
     wh = $(window).outerHeight();
 
@@ -17,6 +17,29 @@ $(window).on('resize load', function(){
 // create the root of the scene graph
 var stage = new PIXI.Container();
 
+
+var lastLoop = new Date;
+
+let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+
+stage.addChild(text);
+
+let fps_counter = 1;
+
+function show_fps_score() {
+    var thisLoop = new Date;
+    var fps = 1000 / (thisLoop - lastLoop);
+    lastLoop = thisLoop;
+
+    fps_counter++;
+
+    if (fps_counter > 5) {
+        text.setText(Math.round(fps));
+        fps_counter = 0;
+    }
+
+
+}
 
 class Rhombus_Grid {
 
@@ -49,7 +72,6 @@ class Rhombus_Grid {
 
         self.init_rhombus_position_x = self.container_offset_left + self.container_padding;
         self.init_rhombus_position_y = -self.rhombus_height / 2;
-
 
 
         self.background_config = {
@@ -160,7 +182,7 @@ class Rhombus_Grid {
 
         self.rhombus_background = self.get_rhombus_background(self.background_config);
 
-        $(window).on('resize', function(){
+        $(window).on('resize', function () {
 
 
             stage.destroy(true);
@@ -197,7 +219,6 @@ class Rhombus_Grid {
         })
 
 
-
         self.all_rhombus = [];
 
         self.rhombus_background.forEach(function (figure) {
@@ -218,9 +239,9 @@ class Rhombus_Grid {
         }
 
 
-
-
         function animate() {
+
+            show_fps_score();
 
             self.rhombus_background.forEach(function (figure) {
                 figure.parts.forEach(function (part) {
@@ -254,6 +275,7 @@ class Rhombus_Grid {
 
 
     }
+
 
     get_rhombus_background(options) {
 
@@ -516,7 +538,7 @@ class Rhombus_Grid {
 
 
         return {
-            width: (Math.max.apply(null, x_arr) + self.rhombus_width)  - Math.min.apply(null, x_arr),
+            width: (Math.max.apply(null, x_arr) + self.rhombus_width) - Math.min.apply(null, x_arr),
             height: (Math.max.apply(null, y_arr) + self.rhombus_height) - Math.min.apply(null, y_arr)
         }
 
